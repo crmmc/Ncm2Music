@@ -15,11 +15,11 @@
 使用<code>pip install pycryptodome mutagen requests urllib3</code>来安装依赖库
 
 <h3>使用方法：</h3>
-直接讲Ncm2Music.py复制到有.ncm文件的文件夹里运行即可。
+直接将Ncm2Music.py复制到有.ncm文件的文件夹里运行即可。
 
 <h3>文件列表:</h3>
 <p>-----Ncm2Music.py 程序主体，推荐使用pyinstaller编译出来使用，直接运行于python2和3中</p>
-<p>-----Ncm2Music_py2.py 此版本显示的歌曲信息更详细，没啥区别</p>
+<p>-----Ncm2Music_py2.py 此版本显示的歌曲信息更详细，没啥区别,但是这个版本我维护的不是很频繁，不推荐使用。</p>
 <p>-----ncmdump.py 某贴吧大神的ncm文件转换器，此文件是源代码，上传供大家使用，代码来源可以在github上搜ncmdump这个项目</p>
 <p>-----lrcget.py 根据网易云歌曲ID来获取歌词的源码，上传供大家使用，原理来自互联网。</p>
 <p>-----SongList_LRC_Getter.py 获取一个歌单里所有歌曲的歌词，可以单独使用来获取歌词，普通歌词保存为lrc翻译歌词保存为tlyric</p>

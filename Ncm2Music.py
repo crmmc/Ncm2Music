@@ -6,13 +6,20 @@
 #need a tools use order: pip install pycryptodome mutagen requests urllib3
 #to install it!
 #it can be used on Windows,Linux,Mac on Python3 or Python2
+print ('*')
+print ('_  _          ___ __  __         _')
+print ('| \| |__ _ __ |_  )  \/  |_  _ __(_)__')
+print ("| .` / _| '  \ / /| |\/| | || (_-< / _|")
+print ('|_|\_\__|_|_|_/___|_|  |_|\_,_/__/_\__|')
 print ('===============================')
 print ('CopyRight 2018-2020 KGDSAVE SOFTWARE STUDIO')
 print ('Coded by CRMMC')
-print ('This is a tool to convent ncm file to music file,add tags and get lyric,picture')
+print ('Sources: github.com/crmmc/Ncm2Music')
+print ('This is a tool to convent ncm file to music ')
+print ('add Music tags and get lyric,picture')
 print ('===============================')
 print ('')
-print ('Importing Librarys')
+print ('[MAIN]Importing Librarys')
 import binascii
 import struct
 import base64
@@ -29,9 +36,12 @@ from mutagen.flac import FLAC
 from mutagen.flac import Picture
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import COMM,APIC,ID3
-reload(sys)
-sys.setdefaultencoding('utf-8')
-print ('OK!')
+if sys.version_info < (3, 4):
+    print ('[MAIN]Running in Python2')
+    print ('[MAIN]reset system encoding to utf-8')
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+print ('[MAIN]Library Load OK!')
 
 def Getlrc(neteaseID):
 	lrc_url = 'http://music.163.com/api/song/lyric?' + 'id=' + str(neteaseID) + '&lv=1&kv=1&tv=-1'
@@ -89,12 +99,12 @@ def dump(file_path,nm1,nm2):
     image_size = struct.unpack('<I', bytes(image_size))[0]
     image_data = f.read(image_size)
     file_name = meta_data['musicName'] + ' - ' + meta_data['artist'][0][0] + '.' + meta_data['format']
-    file_name = file_name.encode('utf-8')
+    file_name = str(file_name.encode('utf-8').decode('utf-8'))
     if os.path.exists(file_name):
-    	print ('Now [' + str(nm1) + '/' + str(nm2) + '][' + meta_data['format'] + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + file_path +']>>>[' + file_name + ']')
-    	print ('File is exist!')
+    	print ('[+]Now [' + str(nm1) + '/' + str(nm2) + '][' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
+    	print ('[!]File is exist!')
     else:
-    	print ('Now [' + str(nm1) + '/' + str(nm2) + '][' + meta_data['format'] + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + file_path +']>>>[' + file_name + ']')
+    	print ('[+]Now [' + str(nm1) + '/' + str(nm2) + '][' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
     	m = open(os.path.join(os.path.split(file_path)[0],file_name),'wb')
     	chunk = bytearray()
     	while True:
@@ -119,64 +129,75 @@ def dump(file_path,nm1,nm2):
     	print ('[!]Get Picture From Internet Error!')
     if meta_data['format'] == 'mp3':
     	mp3_info = MP3(file_name, ID3=EasyID3)
-    	mp3_info['album'] = meta_data['musicName']
+    	#mp3_info.ID3.update_to_v23()
+    	#mp3_info.update()
+    	arhhc = Getlrc(music_id)
+    	mp3_info['album'] = meta_data['album']
     	mp3_info['artist'] = meta_data['artist'][0][0]
     	mp3_info['title'] = meta_data['musicName']
+    	mp3_info['discsubtitle'] = meta_data['alias'] 
+    	mp3_info['lyricist'] = str(arhhc['lrc']['lyric'].encode('utf-8'))
     	mp3_info.save()
     	hh = ID3(file_name)
-    	#hh.update_to_v23()
+    	hh.update_to_v23()
+    	hh.save()
     	hh['APIC:'] = (APIC(mime='image/jpg',  data=picdata))
     	hh.save()
-    	arhhc = Getlrc(music_id)
-    	if arhhc.has_key('lrc'):
+    	#arhhc = Getlrc(music_id)
+    	if 'lrc' in arhhc:
         	try:
         		f = open(music_lrc+'.lrc','w')
         		f.write(str(arhhc['lrc']['lyric'].encode('utf-8')))
         		f.close()
         	except:
-        		print ('LRC Get Error!')
-    	if arhhc.has_key('tlyric'):
+        		print ('[!]LRC Get Error!')
+    	if 'tlyric' in arhhc:
     		try:
     			l = open(music_lrc+'.tlyric','w')
     			l.write(str(arhhc['tlyric']['lyric'].encode('utf-8')))
     			l.close()
     		except:
-        		print ('Tlyric Get Error!')
+        		print ('[!]Tlyric Get Error!')
     elif meta_data['format'] == 'flac':
     	audio = FLAC(file_name)
     	audio["title"] = meta_data['musicName']
-    	audio['album'] = meta_data['musicName']
+    	audio['album'] = meta_data['album']
     	audio['artist'] = meta_data['artist'][0][0]
-    	#audio.add_picture(picdata)
-    	#audio.pictures.append(picdata)
+    	audio['comment'] = meta_data['alias']
+    	app = Picture()
+    	app.data = picdata
+    	app.type = mutagen.id3.PictureType.COVER_FRONT 
+    	app.mime = u"image/jpeg"
+    	audio.add_picture(app)
+    	#audio.pictures.append(app)
     	#audio.save()
     	try:
     		audio.save()
-    		picfile=meta_data['musicName'] + ' - ' + meta_data['artist'][0][0]+'.jpg'
-    		mpic = open(picfile,'w')
-    		mpic.write(picdata)
-    		mpic.close()
-    		print ('[+]Music Image >>>['+picfile+']')
+    		#picfile=meta_data['musicName'] + ' - ' + meta_data['artist'][0][0]+'.jpg'
+    		#mpic = open(picfile,'w')
+    		#mpic.write(picdata)
+    		#mpic.close()
+    		#print ('[+]Music Image >>>['+picfile+']')
     		arhhc = Getlrc(music_id)
-    		if arhhc.has_key('lrc'):
+    		if 'lrc' in arhhc:
         		try:
         			f = open(music_lrc+'.lrc','w')
         			f.write(str(arhhc['lrc']['lyric'].encode('utf-8')))
         			f.close()
         		except:
-        			print ('LRC Get Error!')
-    		if arhhc.has_key('tlyric'):
+        			print ('[!]LRC Get Error!')
+    		if 'tlyric' in arhhc:
     			try:
     				l = open(music_lrc+'.tlyric','w')
     				l.write(str(arhhc['tlyric']['lyric'].encode('utf-8')))
     				l.close()
     			except:
-        			print ('Tlyric Get Error!')
+        			print ('[!]Tlyric Get Error!')
     	except:
     		print ('[!]FLAC Tags Save Error!')
     		sfnr='title:'+meta_data['musicName']+'#$#' + 'artist:' + meta_data['artist'][0][0] +'#$#' +'album:'+ meta_data['musicName']+ '#$#albumPic:'+meta_data['albumPic']
     		rew =open(file_name+'.songinfo','w')
-    		rew.write(sfnr.decode('utf-8'))
+    		rew.write(sfnr)
     		rew.close()
     		print ('[!]Song Tags Has Been Saved On A SongInfo File!');
     else:
@@ -185,20 +206,31 @@ if __name__ == '__main__':
 	ncmfiles = glob.glob("*.ncm")
 	nm2 =len(ncmfiles)
 	nm1 = 0
-	print ('Running in a '+ sys.platform + ' system')
-	n = 0
+	print ('[MAIN]Running in a '+ sys.platform + ' system')
 	try:
-		nm1 = nm1 + 1
 		dfgg = open('ncm2music_error.txt','a')
 	except:
-		print ('Open log file error!')
+		print ('[!]Open log file error!')
+	print ('[MAIN]There are ' + str(len(ncmfiles)) + ' Files ')
+	ttbig = 0
+	for tii in ncmfiles:
+		ttbig = ttbig + os.path.getsize(tii)/1024/1024.0*1.6
+	dw = 's'
+	if ttbig > 60:
+		ttbig = ttbig / 60.0
+		dw = 'min'
+		if ttbig > 60:
+			ttbig = ttbig / 60.0
+			dw = 'h'
+	print ('[MAIN]eta ' + str(round(ttbig,2)) + ' ' + dw)
+	print ('')
 	for ncmf in ncmfiles:
-		n = n+ 1
 		#dump(ncmf,nm1,nm2)
 		try:
-			#print ('[MAIN] Task '+ str(1) + ' Running!')
+			nm1 = nm1 + 1
+			#print ('[MAIN] Task '+ str(nm1) + ' Running!')
 			dump(ncmf,nm1,nm2)
-			#print ('[MAIN] Task '+ str(1) + ' running Done!')
+			#print ('[MAIN] Task '+ str(nm1) + ' running Done!')
 		except:
 			dfgg.write(ncmf +'##File code Error!'+ "\n")
 			continue

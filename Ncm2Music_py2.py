@@ -7,12 +7,28 @@
 #need a tools use order: pip install pycryptodome mutagen requests urllib3
 #to install it!
 #it can be used on Windows,Linux,Mac on Python3 or Python2
+print ('*')
+print ('_  _          ___ __  __         _')
+print ('| \| |__ _ __ |_  )  \/  |_  _ __(_)__')
+print ("| .` / _| '  \ / /| |\/| | || (_-< / _|")
+print ('|_|\_\__|_|_|_/___|_|  |_|\_,_/__/_\__|')
+print ('===============================')
+print ('CopyRight 2018-2020 KGDSAVE SOFTWARE STUDIO')
+print ('Coded by CRMMC')
+print ('Sources: github.com/crmmc/Ncm2Music')
+print ('This is a tool to convent ncm file to music ')
+print ('add Music tags and get lyric,picture')
+print ('===============================')
+print ('')
+print ('Importing Librarys')
 import binascii
 import struct
 import base64
 import json
 import re
 import os
+import sys
+import glob
 import requests
 import mutagen.id3
 from Crypto.Cipher import AES
@@ -21,7 +37,12 @@ from mutagen.flac import FLAC
 from mutagen.flac import Picture
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import COMM,APIC,ID3
-
+if sys.version_info < (3, 4):
+    print ('Running in Python2')
+    print ('reset system encoding to utf-8')
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+print ('Library Load OK!')
 
 def Getlrc(neteaseID):
 	lrc_url = 'http://music.163.com/api/song/lyric?' + 'id=' + str(neteaseID) + '&lv=1&kv=1&tv=-1'
@@ -81,7 +102,6 @@ def dump(file_path):
     image_data = f.read(image_size)
     file_name = meta_data['musicName'] + ' - ' + meta_data['artist'][0][0] + '.' + meta_data['format']
     print('')
-    print('')
     print ('Music Info :')
     print ('==========================')
     print ('---Name:' + meta_data['musicName'])
@@ -92,10 +112,10 @@ def dump(file_path):
     print ('---MusicPIC:'+meta_data['albumPic'])
     print ('==========================')
     if os.path.exists(file_name):
-    	#print ('Now [' + file_path +']>>>[' + file_name + ']')
+    	print ('Now [' + file_path +']>>>[' + file_name + ']')
     	print ('File is exist!')
     else:
-    	#print ('Now [' + file_path +']>>>[' + file_name + ']')
+    	print ('Now [' + file_path +']>>>[' + file_name + ']')
     	m = open(os.path.join(os.path.split(file_path)[0],file_name),'wb')
     	chunk = bytearray()
     	while True:
@@ -122,27 +142,30 @@ def dump(file_path):
     except:
     	print ('[!]Get Picture From Internet Error!')
     if meta_data['format'] == 'mp3':
+    	arhhc = Getlrc(music_id)
     	mp3_info = MP3(file_name, ID3=EasyID3)
     	mp3_info['album'] = meta_data['musicName']
     	mp3_info['artist'] = meta_data['artist'][0][0]
     	mp3_info['title'] = meta_data['musicName']
+    	mp3_info['discsubtitle'] = meta_data['alias'] 
+    	mp3_info['lyricist'] = str(arhhc['lrc']['lyric'].encode('utf-8'))
     	mp3_info.save()
     	hh = ID3(file_name)
-    	#hh.update_to_v23()
+    	hh.update_to_v23()
     	hh['APIC:'] = (APIC(mime='image/jpg',  data=picdata))
     	hh.save()
     	print ('[+]MP3 Tag Add Successful!')
     	print ('[+]Music Lyric Getting...')
-    	arhhc = Getlrc(music_id)
+    	#arhhc = Getlrc(music_id)
     	#print (type(arhhc['lrc']['lyric']))
-    	if arhhc.has_key('lrc'):
+    	if 'lrc' in arhhc:
         	try:
         		f = open(music_lrc+'.lrc','w')
         		f.write(str(arhhc['lrc']['lyric'].encode('utf-8')))
         		f.close()
         	except:
         		print ('Error!')
-    	if arhhc.has_key('tlyric'):
+    	if 'tlyric' in arhhc:
     		try:
     			l = open(music_lrc+'.tlyric','w')
     			l.write(str(arhhc['tlyric']['lyric'].encode('utf-8')))
@@ -153,29 +176,34 @@ def dump(file_path):
     	print ('[+]Adding Tags....')
     	audio = FLAC(file_name)
     	audio["title"] = meta_data['musicName']
-    	audio['album'] = meta_data['musicName']
+    	audio['album'] = meta_data['album']
     	audio['artist'] = meta_data['artist'][0][0]
-    	#audio.add_picture(picdata)
-    	#audio.pictures.append(picdata)
+    	audio['comment'] = meta_data['alias']
+    	app = Picture()
+    	app.data = picdata
+    	app.type = mutagen.id3.PictureType.COVER_FRONT 
+    	app.mime = u"image/jpeg"
+    	audio.add_picture(app)
+    	#audio.pictures.append(app)
     	#audio.save()
     	try:
     		audio.save()
-    		picfile=meta_data['musicName'] + ' - ' + meta_data['artist'][0][0]+'.jpg'
-    		mpic = open(picfile,'w')
-    		mpic.write(picdata)
-    		mpic.close()
-    		print ('[+]Music Image >>>['+picfile+']')
+    		#picfile=meta_data['musicName'] + ' - ' + meta_data['artist'][0][0]+'.jpg'
+    		#mpic = open(picfile,'w')
+    		#mpic.write(picdata)
+    		#mpic.close()
+    		#print ('[+]Music Image >>>['+picfile+']')
     		print ('[+]Music Lyric Getting...')
     		arhhc = Getlrc(music_id)
     		#print (type(arhhc['lrc']['lyric']))
-    		if arhhc.has_key('lrc'):
+    		if 'lrc' in arhhc:
         		try:
         			f = open(music_lrc+'.lrc','w')
         			f.write(str(arhhc['lrc']['lyric'].encode('utf-8')))
         			f.close()
         		except:
         			print ('Error!')
-    		if arhhc.has_key('tlyric'):
+    		if 'tlyric' in arhhc:
     			try:
     				l = open(music_lrc+'.tlyric','w')
     				l.write(str(arhhc['tlyric']['lyric'].encode('utf-8')))
@@ -186,14 +214,12 @@ def dump(file_path):
     		print ('[!]FLAC Tags Save Error!')
     		sfnr='title:'+meta_data['musicName']+'#$#' + 'artist:' + meta_data['artist'][0][0] +'#$#' +'album:'+ meta_data['musicName']+ '#$#albumPic:'+meta_data['albumPic']
     		rew =open(file_name+'.songinfo','w')
-    		rew.write(sfnr.decode('utf-8'))
+    		rew.write(sfnr)
     		rew.close()
     		print ('[!]Song Tags Has Been Saved On A SongInfo File!');
     else:
     		print ('[!]Unknow Type:'+meta_data['format'])
 if __name__ == '__main__':
-	import sys
-	import glob
 	ncmfiles = glob.glob("*.ncm")
 	print ('Running in a '+ sys.platform + ' system')
 	n = 0
@@ -205,11 +231,12 @@ if __name__ == '__main__':
 		n = n+ 1
 		#dump(ncmf)
 		try:
-			print ('[MAIN] Task '+ str(1) + ' Running!')
+			print ('')
+			print ('[MAIN] Task '+ str(n) + ' Running!')
 			dump(ncmf)
-			print ('[MAIN] Task '+ str(1) + ' running Done!')
+			print ('[MAIN] Task '+ str(n) + ' running Done!')
 		except:
-			dfgg.write(ncmf + '##File code Error!')
+			dfgg.write(ncmf + '##File code Error!' + "\n")
 			continue
 	print("[MAIN]ALL Jobs Done!")
 	dfgg.close()
