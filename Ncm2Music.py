@@ -105,7 +105,7 @@ def dump(file_path,nm1,nm2):
     	print ('[!]File is exist!')
     else:
     	print ('[+]Now [' + str(nm1) + '/' + str(nm2) + '][' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
-    	m = open(os.path.join(os.path.split(file_path)[0],file_name),'wb')
+    	m = open((os.path.join(os.path.split(file_path)[0],file_name)).decode('utf-8'),'wb')
     	chunk = bytearray()
     	while True:
         	chunk = bytearray(f.read(0x8000))
@@ -146,14 +146,14 @@ def dump(file_path,nm1,nm2):
     	#arhhc = Getlrc(music_id)
     	if 'lrc' in arhhc:
         	try:
-        		f = open(music_lrc+'.lrc','w')
+        		f = open((music_lrc+'.lrc').decode('utf-8'),'w')
         		f.write(str(arhhc['lrc']['lyric'].encode('utf-8')))
         		f.close()
         	except:
         		print ('[!]LRC Get Error!')
     	if 'tlyric' in arhhc:
     		try:
-    			l = open(music_lrc+'.tlyric','w')
+    			l = open((music_lrc+'.tlyric').decode('utf-8'),'w')
     			l.write(str(arhhc['tlyric']['lyric'].encode('utf-8')))
     			l.close()
     		except:
@@ -181,14 +181,14 @@ def dump(file_path,nm1,nm2):
     		arhhc = Getlrc(music_id)
     		if 'lrc' in arhhc:
         		try:
-        			f = open(music_lrc+'.lrc','w')
+        			f = open((music_lrc+'.lrc').decode('utf-8'),'w')
         			f.write(str(arhhc['lrc']['lyric'].encode('utf-8')))
         			f.close()
         		except:
         			print ('[!]LRC Get Error!')
     		if 'tlyric' in arhhc:
     			try:
-    				l = open(music_lrc+'.tlyric','w')
+    				l = open((music_lrc+'.tlyric').decode('utf-8'),'w')
     				l.write(str(arhhc['tlyric']['lyric'].encode('utf-8')))
     				l.close()
     			except:
@@ -196,7 +196,7 @@ def dump(file_path,nm1,nm2):
     	except:
     		print ('[!]FLAC Tags Save Error!')
     		sfnr='title:'+meta_data['musicName']+'#$#' + 'artist:' + meta_data['artist'][0][0] +'#$#' +'album:'+ meta_data['musicName']+ '#$#albumPic:'+meta_data['albumPic']
-    		rew =open(file_name+'.songinfo','w')
+    		rew =open((file_name+'.songinfo').decode('utf-8'),'w')
     		rew.write(sfnr)
     		rew.close()
     		print ('[!]Song Tags Has Been Saved On A SongInfo File!');
