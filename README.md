@@ -19,6 +19,8 @@
 <p style="background-color:red">直接将Ncm2Music.py复制到有.ncm文件的文件夹里运行即可。</p>
 您可以将NCM文件任意更名，就算更名也能输出正常的音乐文件歌手和歌曲名，因为这些数据被保存在ncm文件内了
 <p style="background-color:red"><u>推荐在转换前将ncm文件全部更名为1.ncm,2.ncm,3.ncm.....这样可以防止因文件名内含有特殊字符导致的转换出错!这样改名并没有害处!</u></p>
+<h5>高端操作</h5>
+<p>开一个Ncm2Muaic只能占用1个CPU核心，将ncm文件分开几个文件夹储存，每个文件夹分别运行Ncm2Music，可以实现所谓的“手动多线程”，实测4核心开4个Ncm2Music刚好4核心全部100%占用，速度最快!!!</p>
 <h3>文件列表:</h3>
 <p>-----Ncm2Music.py 程序主体，推荐使用pyinstaller编译出来使用，直接运行于python2和3中</p>
 <p>-----Ncm2Music_py2.py 此版本显示的歌曲信息更详细，没啥区别,但是这个版本我维护的不是很频繁，不推荐使用。</p>
@@ -40,3 +42,18 @@
   <dt><kbd>2019.1.2</kbd></dt>
     <dd>第四次更新---修复了在winxp上由于python2函数原因导致程序无法运行的bug，加入了将转换出错文件归类到文件夹方便再次转换的功能，进一步修复无法在winxp上使用python2转换文件的bug，再祝大家新年快乐/开心</dd>
 </dl>
+
+
+<h2>例图</h2>
+<p>使用Python2运行Ncm2Music</p>
+<img src="html/s1.jpg" width=300 height=450></img>
+<p>使用Python3运行Ncm2Music</p>
+<img src="html/s3.jpg" width=300 height=420></img>
+<p>转换输出后得到的文件</p>
+<img src="html/s4.jpg"width=300 height=150></img>
+<p>输出的原版歌词LRC文件</p>
+<img src="html/s5.jpg"width=300 height=80></img>
+<p>输出的翻译歌词Tlyric文件</p>
+<img src="html/s6.jpg"width=300 height=100></img>
+<p>4核心开4个Ncm2Music图片</p>
+<img src="html/s2.jpg" width=330 height=150></img>

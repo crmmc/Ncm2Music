@@ -37,6 +37,7 @@ from mutagen.flac import FLAC
 from mutagen.flac import Picture
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import COMM,APIC,ID3
+errnum = 0
 if sys.version_info < (3, 0):
     print ('[MAIN]Running in Python2')
     print ('[MAIN]reset system encoding to utf-8')
@@ -54,14 +55,17 @@ def Getlrc(neteaseID):
 
 
 def dump(file_path,nm1,nm2):
+    global errnum
+    errnum = 1
     core_key = binascii.a2b_hex("687A4852416D736F356B496E62617857")
     meta_key = binascii.a2b_hex("2331346C6A6B5F215C5D2630553C2728")
     unpad = lambda s : s[0:-(s[-1] if type(s[-1]) == int else ord(s[-1]))]
     try:
-    	f = open(file_path.decode('utf-8'),'rb')
+    	f = open(file_path,'rb')
     except:
     	print ('Open File [' + file_path +"] Error! please try to  Delete special characters hit by files!")
-    return -1
+    	return -1
+    errnum =2
     header = f.read(8)
     assert binascii.b2a_hex(header) == b'4354454e4644414d'
     f.seek(2, 1)
@@ -103,14 +107,18 @@ def dump(file_path,nm1,nm2):
     image_size = f.read(4)
     image_size = struct.unpack('<I', bytes(image_size))[0]
     image_data = f.read(image_size)
-    file_name = meta_data['musicName'] + ' - ' + meta_data['artist'][0][0] + '.' + meta_data['format']
-    file_name = str(file_name.encode('utf-8').decode('utf-8'))
+    file_name = meta_data['musicName'] + ' - ' + meta_data['artist'][0][0]
+    file_name = re.sub('[\/:*?"<>|].','-',file_name)
+    file_name = file_name.replace(" ",'-')
+    music_lrc = file_name
+    file_name = str((file_name + '.' + meta_data['format']).encode('utf-8').decode('utf-8'))
+    errnum =3
     if os.path.exists(file_name):
     	print ('[+]Now [' + str(nm1) + '/' + str(nm2) + '][' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
     	print ('[!]File is exist!')
     else:
     	print ('[+]Now [' + str(nm1) + '/' + str(nm2) + '][' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
-    	m = open((os.path.join(os.path.split(file_path)[0],file_name)).decode('utf-8'),'wb')
+    	m = open((os.path.join(os.path.split(file_path)[0],file_name)),'wb')
     	chunk = bytearray()
     	while True:
         	chunk = bytearray(f.read(0x8000))
@@ -123,10 +131,10 @@ def dump(file_path,nm1,nm2):
         	m.write(chunk)
     	m.close()
     	f.close()
+    errnum =4
     picdata = ''
     music_id = meta_data['musicId']
     music_name = meta_data['musicName']
-    music_lrc = meta_data['musicName'] + ' - ' + meta_data['artist'][0][0]
     try:
     	picurl = meta_data['albumPic']
     	picdata = requests.get(picurl).content
@@ -140,29 +148,34 @@ def dump(file_path,nm1,nm2):
     	mp3_info['album'] = meta_data['album']
     	mp3_info['artist'] = meta_data['artist'][0][0]
     	mp3_info['title'] = meta_data['musicName']
-    	mp3_info['discsubtitle'] = meta_data['alias'] 
-    	mp3_info['lyricist'] = str(arhhc['lrc']['lyric'].encode('utf-8'))
+    	mp3_info['discsubtitle'] = meta_data['alias']
+    	try:
+    		mp3_info['lyricist'] = str(arhhc['lrc']['lyric'].encode('utf-8'))
+    	except:
+    		hsvsbs = 'hshs'
     	mp3_info.save()
     	hh = ID3(file_name)
     	hh.update_to_v23()
     	hh.save()
     	hh['APIC:'] = (APIC(mime='image/jpg',  data=picdata))
     	hh.save()
-    	#arhhc = Getlrc(music_id)
+    	errnum =5
+    	#print (music_lrc)
     	if 'lrc' in arhhc:
         	try:
-        		f = open((music_lrc+'.lrc').decode('utf-8'),'w')
-        		f.write(str(arhhc['lrc']['lyric'].encode('utf-8')))
+        		f = open((music_lrc+'.lrc'),'w')
+        		f.write(arhhc['lrc']['lyric'])
         		f.close()
         	except:
         		print ('[!]LRC Get Error!')
     	if 'tlyric' in arhhc:
     		try:
-    			l = open((music_lrc+'.tlyric').decode('utf-8'),'w')
-    			l.write(str(arhhc['tlyric']['lyric'].encode('utf-8')))
+    			l = open((music_lrc+'.tlyric'),'w')
+    			l.write(arhhc['tlyric']['lyric'])
     			l.close()
     		except:
         		print ('[!]Tlyric Get Error!')
+    	errnum = 6
     elif meta_data['format'] == 'flac':
     	audio = FLAC(file_name)
     	audio["title"] = meta_data['musicName']
@@ -186,15 +199,15 @@ def dump(file_path,nm1,nm2):
     		arhhc = Getlrc(music_id)
     		if 'lrc' in arhhc:
         		try:
-        			f = open((music_lrc+'.lrc').decode('utf-8'),'w')
-        			f.write(str(arhhc['lrc']['lyric'].encode('utf-8')))
+        			f = open((music_lrc+'.lrc'),'w')
+        			f.write(arhhc['lrc']['lyric'])
         			f.close()
         		except:
         			print ('[!]LRC Get Error!')
     		if 'tlyric' in arhhc:
     			try:
-    				l = open((music_lrc+'.tlyric').decode('utf-8'),'w')
-    				l.write(str(arhhc['tlyric']['lyric'].encode('utf-8')))
+    				l = open((music_lrc+'.tlyric'),'w')
+    				l.write(arhhc['tlyric']['lyric'])
     				l.close()
     			except:
         			print ('[!]Tlyric Get Error!')
@@ -207,6 +220,7 @@ def dump(file_path,nm1,nm2):
     		print ('[!]Song Tags Has Been Saved On A SongInfo File!');
     else:
     		print ('[!]Unknow Type:'+meta_data['format'])
+    errnum = 0
     return 0
 if __name__ == '__main__':
 	ncmfiles = glob.glob("*.ncm")
@@ -241,7 +255,7 @@ if __name__ == '__main__':
 			dump(ncmf,nm1,nm2)
 			#print ('[MAIN] Task '+ str(nm1) + ' running Done!')
 		except:
-			dfgg.write(ncmf +'##File code Error!'+ "\n")
+			dfgg.write(ncmf +'##File code Error!'+ "  ErrorCode:"+ str(errnum) + "\n")
 			fpath = "./ERRORFILES"
 			if not os.path.exists(fpath):
 				os.makedirs(fpath)
