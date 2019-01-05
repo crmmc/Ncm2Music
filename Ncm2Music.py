@@ -213,8 +213,11 @@ if __name__ == '__main__':
 		print ('[!]Open log file error!')
 	print ('[MAIN]There are ' + str(len(ncmfiles)) + ' Files ')
 	ttbig = 0
-	for tii in ncmfiles:
-		ttbig = ttbig + os.path.getsize(tii)/1024/1024.0*1.6
+	try:
+		for tii in ncmfiles:
+			ttbig = ttbig + os.path.getsize(tii)/1024/1024.0*1.6
+	except:
+		ttbig = -1
 	dw = 's'
 	if ttbig > 60:
 		ttbig = ttbig / 60.0
@@ -233,6 +236,11 @@ if __name__ == '__main__':
 			#print ('[MAIN] Task '+ str(nm1) + ' running Done!')
 		except:
 			dfgg.write(ncmf +'##File code Error!'+ "\n")
-			continue
+			fpath = "./ERRORFILES"
+			if not os.path.exists(fpath):
+				os.makedirs(fpath)
+				shutil.move(ncmf,fpath + "/" + ncmf)          
+				print ('move [ ' + ncmf + ' ]->[ ' + fpath + "/" + ncmf + ' ]')
+				continue
 	print("[MAIN]ALL Jobs Done!")
 	dfgg.close()

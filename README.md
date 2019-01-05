@@ -25,4 +25,16 @@
 <p>-----SongList_LRC_Getter.py 获取一个歌单里所有歌曲的歌词，可以单独使用来获取歌词，普通歌词保存为lrc翻译歌词保存为tlyric,但是只能在Python2环境下运行</p>
 <p>-----README.md 说明文件</p>
 
-copyright 2018-2020 KGDSAVE SOFTWARE STUDIO - CRMMC 
+<em>copyright 2018-2020 KGDSAVE SOFTWARE STUDIO - CRMMC</em> 
+
+<h2>更新日志</h2>
+<dl>
+  <dt>2018.10.12</dt>
+    <dd>第一次更新---项目出生的日子，完成了程序主体和主要功能加入</dd>
+  <dt>2018.10.20</dt>
+    <dd>第二次更新---加入了下载中外文歌词，修复了flac文件无法内嵌歌曲图片的bug，添加了获取整个歌单的歌词的脚本,重新优化了界面，修复了无法在python3中运行的bug</dd>
+  <dt>2018.12.1</dt>
+    <dd>第三次更新---修复了在windows上由于编码不同导致的部分文件转换失败的bug，删除引用了部分无用库。加入错误文件日志功能,更方便找到错误文件。</dd>
+  <dt>2019.1.2</dt>
+    <dd>第四次更新---修复了在winxp上由于python2函数原因导致程序无法运行的bug，加入了将转换出错文件归类到文件夹方便再次转换的功能，进一步修复无法在winxp上使用python2转换文件的bug，再祝大家新年快乐/开心</dd>
+</dl>
