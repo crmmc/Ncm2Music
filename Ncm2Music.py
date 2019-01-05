@@ -22,6 +22,7 @@ print ('')
 print ('[MAIN]Importing Librarys')
 import binascii
 import struct
+import shutil
 import base64
 import json
 import re
