@@ -37,7 +37,7 @@ from mutagen.flac import FLAC
 from mutagen.flac import Picture
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import COMM,APIC,ID3
-if sys.version_info < (3, 4):
+if sys.version_info < (3, 0):
     print ('[MAIN]Running in Python2')
     print ('[MAIN]reset system encoding to utf-8')
     reload(sys)
@@ -57,7 +57,11 @@ def dump(file_path,nm1,nm2):
     core_key = binascii.a2b_hex("687A4852416D736F356B496E62617857")
     meta_key = binascii.a2b_hex("2331346C6A6B5F215C5D2630553C2728")
     unpad = lambda s : s[0:-(s[-1] if type(s[-1]) == int else ord(s[-1]))]
-    f = open(file_path,'rb')
+    try:
+    	f = open(file_path.decode('utf-8'),'rb')
+    except:
+    	print ('Open File [' + file_path +"] Error! please try to  Delete special characters hit by files!")
+    return -1
     header = f.read(8)
     assert binascii.b2a_hex(header) == b'4354454e4644414d'
     f.seek(2, 1)
@@ -203,6 +207,7 @@ def dump(file_path,nm1,nm2):
     		print ('[!]Song Tags Has Been Saved On A SongInfo File!');
     else:
     		print ('[!]Unknow Type:'+meta_data['format'])
+    return 0
 if __name__ == '__main__':
 	ncmfiles = glob.glob("*.ncm")
 	nm2 =len(ncmfiles)
