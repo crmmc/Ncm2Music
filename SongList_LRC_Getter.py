@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/bin/env python2
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -35,6 +35,9 @@ def download(songlistID):
         arhhc = Getlrc(music_id)
     	if 'lrc' in arhhc:
         	try:
+    			if os.path.exits(music_lrc+'.lrc'):
+    				print 'LYRIC:' + music_lrc+'.lrc' + 'File exist!'
+    				continue
         		f = open(music_lrc+'.lrc','w')
         		f.write(str(arhhc['lrc']['lyric'].encode('utf-8')))
         		f.close()
@@ -43,6 +46,9 @@ def download(songlistID):
         		errorfile.write('LRC ERROR:' +music_name+ ':' + music_id +"\n")
     	if 'tlyric' in arhhc:
     		try:
+    			if os.path.exits(music_lrc+'.tlyric'):
+    				print 'LYRIC:' + music_lrc+'.tlyric' + 'File exist!'
+    				continue
     			l = open(music_lrc+'.tlyric','w')
     			l.write(str(arhhc['tlyric']['lyric'].encode('utf-8')))
     			l.close()
@@ -76,12 +82,7 @@ for i in glob.glob('*.flac'):
 	if len(hg) == 2:
 		sn = hg[1].split('.')[0] + '.lrc'
 		snd = i.split('.')[0] + '.lrc'
-		an = hg[1].split('.')[0] + '.tlyric'
-		anr = i.split('.')[0] + '.tlyric'
 		if os.path.exists(sn):
 			print ('[' + sn + ']>>>[' + snd + ']')
 			os.rename(sn,snd)
-		if os.path.exists(an):
-			print ('[' + an + ']>>>[' + anr + ']')
-			os.rename(an,anr)
 print 'FLAC Lyric turn done!'
