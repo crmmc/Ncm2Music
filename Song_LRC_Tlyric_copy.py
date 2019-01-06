@@ -1,6 +1,12 @@
 #!/bin/env python2
 import os,glob,re
 
+def delname():
+	for r in glob.glob('*'):
+		if os.path.getsize(r) < 32:
+			os.remove(r)
+			print ('[' + r + '] Delete !')
+
 def turnname():
 	for t in glob.glob('*.lyric'):
 		os.system('mv "' + t + '" "' + t.replace('.lyric','') + '.ylc"')  #os.rename(t,t.replace('.lrc1','') + '.ylc')
@@ -14,7 +20,11 @@ def gtm(gyy):
 def lrcTOlyric():
 	for y in glob.glob('*.lrc'):
 		os.system('mv "' + y + '" "' + y.replace('.lrc','') + '.lyric"')
-	
+def last():
+	for y in glob.glob('*.ylc'):
+		os.system('mv "' + y + '" "' + y.replace('.ylc','') + '.lrc"')
+	for y in glob.glob('*.tlc'):
+		os.system('mv "' + y + '" "' + y.replace('.tlc','') + '.lrc"')
 def hebing(songname):
 	ty1 = songname + '.ylc'
 	ty2 = songname + '.tlc'
@@ -35,6 +45,7 @@ def hebing(songname):
 	except:
 		print ('REMOVE ' + ty1 + ' & ' + ty2 + ' FAILD!')
 #lrcTOlyric()
+delname()
 turnname()
 for i in glob.glob('*.tlc'):
 	hhiu = i.replace('.tlc','')
@@ -56,4 +67,6 @@ for u in glob.glob('*.lrc'):
 						uj = o.replace('.flac','') + '.lrc'
 						print ('[' + nj + '.lrc]>>>[' + uj + ']')
 						os.rename(nj + '.lrc',uj)
+delname()
+last()
 print ('All Done!')
