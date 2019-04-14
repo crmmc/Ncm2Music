@@ -20,7 +20,8 @@
 您可以将NCM文件任意更名，就算更名也能输出正常的音乐文件歌手和歌曲名，因为这些数据被保存在ncm文件内了
 <p style="background-color:red"><u>推荐在转换前将ncm文件全部更名为1.ncm,2.ncm,3.ncm.....这样可以防止因文件名内含有特殊字符导致的转换出错!这样改名并没有害处!</u></p>
 <h5>高端操作</h5>
-<p>开一个Ncm2Muaic只能占用1个CPU核心，将ncm文件分开几个文件夹储存，每个文件夹分别运行Ncm2Music，可以实现所谓的“手动多线程”，实测4核心开4个Ncm2Music刚好4核心全部100%占用，速度最快!!!</p>
+<p>开一个Ncm2Muaic线程只能占用1个CPU核心的50%，将主程序(Ncm2Music.py)的第227行的变量AllTheardNumber的值更改为(CPU核心数 - 1)*2，速度最快!!!</p>
+<img src="html/ss1.png" width=330 height=200>
 <h3>文件列表:</h3>
 <p>-----Ncm2Music.py 程序主体，推荐使用pyinstaller编译出来使用，直接运行于python2和3中</p>
 <p>-----Ncm2Music_py2.py 此版本显示的歌曲信息更详细，没啥区别,但是这个版本我维护的不是很频繁，不推荐使用。</p>

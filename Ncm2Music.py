@@ -105,8 +105,13 @@ def dump(file_path,Thnom):
     file_name = meta_data['musicName'] + ' - ' + meta_data['artist'][0][0] + '.' + meta_data['format']
     file_name = str(file_name)
     if os.path.exists(file_name):
-    	print ('[+][Thread:{}]Now '.format(Thnom) + '[' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
-    	print ('[!]File is exist!')
+        print ('[+][Thread:{}]Now '.format(Thnom) + '[' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
+        print ('[!]File is exist!')
+        if (os.path.getsize(file_name) < (os.path.getsize(file_path) - (3*1024))):
+            print ('[!]Bad File!')
+            os.remove(file_name)
+            dump(file_path,Thnom)
+            return 0
     else:
     	print ('[+][Thread:{}]Now '.format(Thnom) + '[' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
     	m = open((os.path.join(os.path.split(file_path)[0],file_name)),'wb')
@@ -133,8 +138,6 @@ def dump(file_path,Thnom):
     	print ('[!][Thread:{}]Get Picture From Internet Error!'.format(Thnom))
     if meta_data['format'] == 'mp3':
     	mp3_info = MP3(file_name, ID3=EasyID3)
-    	#mp3_info.ID3.update_to_v23()
-    	#mp3_info.update()
     	arhhc = Getlrc(music_id)
     	mp3_info['album'] = meta_data['album']
     	mp3_info['artist'] = meta_data['artist'][0][0]
@@ -147,7 +150,6 @@ def dump(file_path,Thnom):
     	hh.save()
     	hh['APIC:'] = (APIC(mime='image/jpg',  data=picdata))
     	hh.save()
-    	#arhhc = Getlrc(music_id)
     	if 'lrc' in arhhc:
         	try:
         		f = open((music_lrc+'.lrc'),'w')
@@ -173,15 +175,8 @@ def dump(file_path,Thnom):
     	app.type = mutagen.id3.PictureType.COVER_FRONT 
     	app.mime = u"image/jpeg"
     	audio.add_picture(app)
-    	#audio.pictures.append(app)
-    	#audio.save()
     	try:
     		audio.save()
-    		#picfile=meta_data['musicName'] + ' - ' + meta_data['artist'][0][0]+'.jpg'
-    		#mpic = open(picfile,'w')
-    		#mpic.write(picdata)
-    		#mpic.close()
-    		#print ('[+]Music Image >>>['+picfile+']')
     		arhhc = Getlrc(music_id)
     		if 'lrc' in arhhc:
         		try:
@@ -210,12 +205,11 @@ def dump(file_path,Thnom):
 def MultiThreadChild(list,Number):
 	global dfgg
 	global totsong
+	print ('[+][Thread:{}] Thread Ready! Get Task: {}'.format(Number,len(list)))
 	for ncm1f in list:
-		print (Number)
-		print (ncm1f)
-		dump(ncm1f,Number)
+		time.sleep(Number)
 		try:
-			#dump(ncm1f,Number)
+			dump(ncm1f,Number)
 			totsong = totsong + 1
 		except:
 			dfgg.write(ncm1f +'##File code Error!'+ "\n")
@@ -224,7 +218,7 @@ def MultiThreadChild(list,Number):
 
 if __name__ == '__main__':
 	global AllTheardNumber
-	AllTheardNumber = 2
+	AllTheardNumber = 4
 	ncmfiles = glob.glob("*.ncm")
 	if len(ncmfiles) < 1:
 		print ('[MAIN]NCM Files No Found!')
@@ -234,8 +228,6 @@ if __name__ == '__main__':
 	t=[0,]*AllTheardNumber
 	global dfgg
 	global totsong
-	global ncmlist
-	ncmlist = []
 	totsong = 0
 	print ('[MAIN]Running in a '+ sys.platform + ' system')
 	try:
@@ -257,26 +249,29 @@ if __name__ == '__main__':
 	print ('[MAIN]Open {} Threads To Convent This Files!'.format(AllTheardNumber))
 	last = int(len(ncmfiles) % AllTheardNumber)
 	avg = int((len(ncmfiles)-last)/AllTheardNumber)
-	for i in range(0,AllTheardNumber):
-		ncmlist.clear()
-		if i == (AllTheardNumber - 1):
-			for o in range(int(avg*i),int(avg * (i+1)+ last)):
+	for ppo in range(0,AllTheardNumber):
+		ncmlist =[]
+		if ppo == (AllTheardNumber - 1):
+			for o in range(int(avg*ppo),int(avg * (ppo+1)+ last)):
 				ncmlist.append(ncmfiles[o])
-			#print (ncmlist)
-			t[i] =threading.Thread(target=MultiThreadChild,args=(ncmlist,i),daemon=True)
-			t[i].start()
+			t[ppo] =threading.Thread(target=MultiThreadChild,args=(ncmlist,ppo),daemon=True)
+			t[ppo].start()
+			ncmlist = []
 		else:
-			for o in range(int(avg*i),int(avg * (i+1) )):
+			for o in range(int(avg*ppo),int(avg * (ppo+1) )):
 				ncmlist.append(ncmfiles[o])
-			#print (ncmlist)
-			t[i] =threading.Thread(target=MultiThreadChild,args=(ncmlist,i),daemon=True)
-			t[i].start()
+			t[ppo] =threading.Thread(target=MultiThreadChild,args=(ncmlist,ppo),daemon=True)
+			t[ppo].start()
+			ncmlist = []
 	print ('')
 	while(totsong < len(ncmfiles)):
 		print ('[MAIN]'+ '[' + time.asctime() +']Prograss: [' +  str(totsong) + '/' + str(len(ncmfiles)) + ']')
-		time.sleep(10)
+		try:
+			time.sleep(10)
+		except:
+			print ('[!]Warning! Main Thread Exit!')
 	print ('[MAIN]'+ '[' + time.asctime() +']Prograss: [' +  str(totsong) + '/' + str(len(ncmfiles)) + ']')
-	if os.path.getsize('ncm2music_error.txt') < 1:
+	if os.path.getsize('ncm2music_error.txt') < 10:
 		os.remove('ncm2music_error.txt')
 	print ("[MAIN]ALL Jobs Done!")
 	dfgg.close()
