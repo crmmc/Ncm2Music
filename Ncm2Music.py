@@ -157,13 +157,13 @@ def dump(file_path,Thnom):
         		f.close()
         	except:
         		print ('[!][Thread:{}]LRC Get Error!'.format(Thnom))
-    	if 'tlyric' in arhhc:
+    	if 'tlc' in arhhc:
     		try:
-    			l = open((music_lrc+'.tlyric'),'w')
-    			l.write(str(arhhc['tlyric']['lyric']))
+    			l = open((music_lrc+'.tlc'),'w')
+    			l.write(str(arhhc['tlc']['lyric']))
     			l.close()
     		except:
-        		print ('[!][Thread:{}]Tlyric Get Error!'.format(Thnom))
+        		print ('[!][Thread:{}]tlc Get Error!'.format(Thnom))
     elif meta_data['format'] == 'flac':
     	audio = FLAC(file_name)
     	audio["title"] = meta_data['musicName']
@@ -179,6 +179,8 @@ def dump(file_path,Thnom):
     		audio.save()
     		arhhc = Getlrc(music_id)
     		if 'lrc' in arhhc:
+    			if len(arhhc['tlc']['lyric']) < 1:
+    				break
         		try:
         			f = open((music_lrc+'.lrc'),'w')
         			f.write(str(arhhc['lrc']['lyric']))
@@ -186,12 +188,14 @@ def dump(file_path,Thnom):
         		except:
         			print ('[!][Thread:{}]LRC Get Error!'.format(Thnom))
     		if 'tlyric' in arhhc:
+    			if len(arhhc['tlyric']['lyric']) < 1:
+    				break
     			try:
-    				l = open((music_lrc+'.tlyric'),'w')
+    				l = open((music_lrc+'.tlc'),'w')
     				l.write(str(arhhc['tlyric']['lyric']))
     				l.close()
     			except:
-        			print ('[!][Thread:{}]Tlyric Get Error!'.format(Thnom))
+        			print ('[!][Thread:{}]tlc Get Error!'.format(Thnom))
     	except:
     		print ('[!]{}FLAC Tags Save Error!'.format(Thnom))
     		sfnr='title:'+meta_data['musicName']+'#$#' + 'artist:' + meta_data['artist'][0][0] +'#$#' +'album:'+ meta_data['musicName']+ '#$#albumPic:'+meta_data['albumPic']

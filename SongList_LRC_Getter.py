@@ -33,29 +33,33 @@ def download(songlistID):
         song_url = "http://music.163.com/song/media/outer/url?id=%s" % music_id
         music_lrc = music_name.replace('/',' ')
         arhhc = Getlrc(music_id)
+        if len(arhhc['lrc']['lyric']) < 10:
+        	break
     	if 'lrc' in arhhc:
         	try:
-    			if os.path.exits(music_lrc+'.lrc'):
+    			if os.path.exists(music_lrc+'.lrc'):
     				print 'LYRIC:' + music_lrc+'.lrc' + 'File exist!'
-    				continue
+    				break
         		f = open(music_lrc+'.lrc','w')
         		f.write(str(arhhc['lrc']['lyric'].encode('utf-8')))
         		f.close()
         	except:
         		print ('[!]LRC Get Error!')
         		errorfile.write('LRC ERROR:' +music_name+ ':' + music_id +"\n")
-    	if 'tlyric' in arhhc:
+        if 'tlc' in arhhc:
+        	if len(arhhc['lrc']['lyric']) < 10:
+        		break
     		try:
-    			if os.path.exits(music_lrc+'.tlyric'):
-    				print 'LYRIC:' + music_lrc+'.tlyric' + 'File exist!'
+    			if os.path.exists(music_lrc+'.tlc'):
+    				print 'LYRIC:' + music_lrc+'.tlc' + 'File exist!'
     				continue
-    			l = open(music_lrc+'.tlyric','w')
+    			l = open(music_lrc+'.tlc','w')
     			l.write(str(arhhc['tlyric']['lyric'].encode('utf-8')))
     			l.close()
     		except:
-        		print ('[!]Tlyric Get Error!')
+        		print ('[!]tlyric Get Error!')
                 errorfile.write('TLYARC ERROR:' +music_name+ ':' + music_id +"\n")
-        		#print (str(arhhc['tlyric']['lyric'].encode('utf-8')))
+        		#print (str(arhhc['tlc']['lyric'].encode('utf-8')))
         
 errorfile = open('error.list','a')
 errorfile.write(str(time.asctime()).encode('utf-8') + "\n")
@@ -68,8 +72,8 @@ for i in glob.glob('*.mp3'):
 	if len(hg) == 2:
 		sn = hg[1].split('.')[0] + '.lrc'
 		snd = i.split('.')[0] + '.lrc'
-		an = hg[1].split('.')[0] + '.tlyric'
-		anr = i.split('.')[0] + '.tlyric'
+		an = hg[1].split('.')[0] + '.tlc'
+		anr = i.split('.')[0] + '.tlc'
 		if os.path.exists(sn):
 			print ('[' + sn + ']>>>[' + snd + ']')
 			os.rename(sn,snd)
@@ -82,7 +86,12 @@ for i in glob.glob('*.flac'):
 	if len(hg) == 2:
 		sn = hg[1].split('.')[0] + '.lrc'
 		snd = i.split('.')[0] + '.lrc'
+		an = hg[1].split('.')[0] + '.tlc'
+		anr = i.split('.')[0] + '.tlc'
 		if os.path.exists(sn):
 			print ('[' + sn + ']>>>[' + snd + ']')
 			os.rename(sn,snd)
+		if os.path.exists(an):
+			print ('[' + an + ']>>>[' + anr + ']')
+			os.rename(an,anr)
 print 'FLAC Lyric turn done!'
