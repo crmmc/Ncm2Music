@@ -29,6 +29,7 @@
 <p>-----lrcget.py 根据网易云歌曲ID来获取歌词的源码，上传供大家使用，原理来自互联网。</p>
 <p>-----SongList_LRC_Getter.py 获取一个歌单里所有歌曲的歌词，可以单独使用来获取歌词，普通歌词保存为lrc翻译歌词保存为tlyric,但是只能在Python2环境下运行</p>
 <p>-----Song_LRC_Tlyric_copy.py 合并lyric和tlyric文件的脚本，若要合并lrc文件和tlyric文件，请将脚本中" #lrcTOlyric() " 去注释，具体在文件的"37"行</p>
+<p>-----named.py 将lrc和tlc文件自动重命名为歌曲名称方便便携式播放器识别</p>
 <p>-----README.md 说明文件</p>
 
 <em>copyright 2018-2020 KGDSAVE SOFTWARE STUDIO - CRMMC</em> 

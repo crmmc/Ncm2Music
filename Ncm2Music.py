@@ -54,7 +54,9 @@ def Getlrc(neteaseID):
 	j = json.loads(json_obj)
 	return j
 
-
+def sOUT(text):
+	sys.stdout.write(text)
+	sys.stdout.flush()
 
 def dump(file_path,Thnom):
     core_key = binascii.a2b_hex("687A4852416D736F356B496E62617857")
@@ -103,7 +105,7 @@ def dump(file_path,Thnom):
     image_size = struct.unpack('<I', bytes(image_size))[0]
     image_data = f.read(image_size)
     file_name = meta_data['musicName'] + ' - ' + meta_data['artist'][0][0] + '.' + meta_data['format']
-    file_name = str(file_name)
+    #file_name = str(file_name)
     if os.path.exists(file_name):
         print ('[+][Thread:{}]Now '.format(Thnom) + '[' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
         print ('[!]File is exist!')
@@ -165,6 +167,7 @@ def dump(file_path,Thnom):
     		except:
         		print ('[!][Thread:{}]tlc Get Error!'.format(Thnom))
     elif meta_data['format'] == 'flac':
+    	print (file_name)
     	audio = FLAC(file_name)
     	audio["title"] = meta_data['musicName']
     	audio['album'] = meta_data['album']
@@ -175,29 +178,32 @@ def dump(file_path,Thnom):
     	app.type = mutagen.id3.PictureType.COVER_FRONT 
     	app.mime = u"image/jpeg"
     	audio.add_picture(app)
+    	#audio.save()
     	try:
     		audio.save()
     		arhhc = Getlrc(music_id)
     		if 'lrc' in arhhc:
-    			if len(arhhc['tlc']['lyric']) < 1:
-    				break
-        		try:
-        			f = open((music_lrc+'.lrc'),'w')
-        			f.write(str(arhhc['lrc']['lyric']))
-        			f.close()
-        		except:
-        			print ('[!][Thread:{}]LRC Get Error!'.format(Thnom))
+    			print (7)
+    			if len(arhhc['tlyric']['lyric']) < 1:
+    				pass
+    				try:
+    					f = open((music_lrc+'.lrc'),'w')
+    					f.write(str(arhhc['lrc']['lyric']))
+    					f.close()
+    				except:
+    					print ('[!][Thread:{}]LRC Get Error!'.format(Thnom))
     		if 'tlyric' in arhhc:
     			if len(arhhc['tlyric']['lyric']) < 1:
-    				break
-    			try:
-    				l = open((music_lrc+'.tlc'),'w')
-    				l.write(str(arhhc['tlyric']['lyric']))
-    				l.close()
-    			except:
-        			print ('[!][Thread:{}]tlc Get Error!'.format(Thnom))
+    				pass
+    			else:
+    				try:
+    					l = open((music_lrc+'.tlc'),'w')
+    					l.write(str(arhhc['tlyric']['lyric']))
+    					l.close()
+    				except:
+        				print ('[!][Thread:{}]tlc Get Error!'.format(Thnom))
     	except:
-    		print ('[!]{}FLAC Tags Save Error!'.format(Thnom))
+    		print ('[!]Thread{} : FLAC Tags Save Error!'.format(Thnom))
     		sfnr='title:'+meta_data['musicName']+'#$#' + 'artist:' + meta_data['artist'][0][0] +'#$#' +'album:'+ meta_data['musicName']+ '#$#albumPic:'+meta_data['albumPic']
     		rew =open((file_name+'.songinfo'),'w')
     		rew.write(sfnr)
@@ -241,7 +247,7 @@ if __name__ == '__main__':
 	print ('[MAIN]There are ' + str(len(ncmfiles)) + ' Files ')
 	ttbig = 0
 	for tii in ncmfiles:
-		ttbig = ttbig + os.path.getsize(tii)/1024/1024.0*1.6
+		ttbig = ttbig + os.path.getsize(tii)/1024/1024.0*1
 	dw = 's'
 	if ttbig > 60:
 		ttbig = ttbig / 60.0
@@ -251,6 +257,7 @@ if __name__ == '__main__':
 			dw = 'h'
 	print ('[MAIN]eta ' + str(round(ttbig,2)) + ' ' + dw)
 	print ('[MAIN]Open {} Threads To Convent This Files!'.format(AllTheardNumber))
+	print ('[MAIN]Press "Ctrl + c" to stop convent')
 	last = int(len(ncmfiles) % AllTheardNumber)
 	avg = int((len(ncmfiles)-last)/AllTheardNumber)
 	for ppo in range(0,AllTheardNumber):
@@ -269,7 +276,7 @@ if __name__ == '__main__':
 			ncmlist = []
 	print ('')
 	while(totsong < len(ncmfiles)):
-		print ('[MAIN]'+ '[' + time.asctime() +']Prograss: [' +  str(totsong) + '/' + str(len(ncmfiles)) + ']')
+		sOUT ("\r" + '[MAIN]'+ '[' + time.asctime() +']Prograss: [' +  str(totsong) + '/' + str(len(ncmfiles)) + ']    ')
 		try:
 			time.sleep(10)
 		except:
