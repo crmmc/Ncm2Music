@@ -107,7 +107,7 @@ def dump(file_path,Thnom):
     file_name = meta_data['musicName'] + ' - ' + meta_data['artist'][0][0] + '.' + meta_data['format']
     #file_name = str(file_name)
     if os.path.exists(file_name):
-        print ('[+][Thread:{}]Now '.format(Thnom) + '[' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
+        print ("\n" + '[+][Thread:{}]Now '.format(Thnom) + '[' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
         print ('[!]File is exist!')
         if (os.path.getsize(file_name) < (os.path.getsize(file_path) - (3*1024))):
             print ('[!]Bad File!')
@@ -115,7 +115,7 @@ def dump(file_path,Thnom):
             dump(file_path,Thnom)
             return 0
     else:
-    	print ('[+][Thread:{}]Now '.format(Thnom) + '[' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
+    	print ("\n" + '[+][Thread:{}]Now '.format(Thnom) + '[' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
     	m = open((os.path.join(os.path.split(file_path)[0],file_name)),'wb')
     	chunk = bytearray()
     	while True:
@@ -129,18 +129,18 @@ def dump(file_path,Thnom):
         	m.write(chunk)
     	m.close()
     	f.close()
-    picdata = ''
     music_id = meta_data['musicId']
     music_name = meta_data['musicName']
     music_lrc = meta_data['musicName'] + ' - ' + meta_data['artist'][0][0]
-    try:
-    	picurl = meta_data['albumPic']
-    	picdata = requests.get(picurl).content
-    except:
-    	print ('[!][Thread:{}]Get Picture From Internet Error!'.format(Thnom))
+    #print (len(image_data))
+    if len(image_data) < 10000:
+    	try:
+    		picurl = meta_data['albumPic']
+    		image_data = requests.get(picurl).content
+    	except:
+    		print ("\n" + '[!][Thread:{}][{}]Get Picture From Internet Error!'.format(Thnom,file_path))
     if meta_data['format'] == 'mp3':
     	mp3_info = MP3(file_name, ID3=EasyID3)
-    	arhhc = Getlrc(music_id)
     	mp3_info['album'] = meta_data['album']
     	mp3_info['artist'] = meta_data['artist'][0][0]
     	mp3_info['title'] = meta_data['musicName']
@@ -150,81 +150,95 @@ def dump(file_path,Thnom):
     	hh = ID3(file_name)
     	hh.update_to_v23()
     	hh.save()
-    	hh['APIC:'] = (APIC(mime='image/jpg',  data=picdata))
-    	hh.save()
+    	hh['APIC:'] = (APIC(mime='image/jpg',  data=image_data))
+    	try:
+    		hh.save()
+    	except:
+    		open(music_lrc+'.jpg','wb').write(image_data)
+    		print ("\n" + '[!]Thread{} : [{}]MP3 Tags Save Error!'.format(Thnom,file_path))
+    	arhhc = ''
+    	try:
+    		arhhc = Getlrc(music_id)
+    	except:
+    		print ("\n" + '[!]Thread{} :[{}] Get MP3 LRC Error!'.format(Thnom,file_path))
     	if 'lrc' in arhhc:
         	try:
         		f = open((music_lrc+'.lrc'),'w')
         		f.write(str(arhhc['lrc']['lyric']))
         		f.close()
         	except:
-        		print ('[!][Thread:{}]LRC Get Error!'.format(Thnom))
-    	if 'tlc' in arhhc:
+        		print ('[!][Thread:{}][{}]LRC Get Error!'.format(Thnom,file_path))
+    	if 'tlyric' in arhhc:
     		try:
     			l = open((music_lrc+'.tlc'),'w')
-    			l.write(str(arhhc['tlc']['lyric']))
+    			l.write(str(arhhc['tlyric']['lyric']))
     			l.close()
     		except:
-        		print ('[!][Thread:{}]tlc Get Error!'.format(Thnom))
+        		print ('[!][Thread:{}][{}]tlc Get Error!'.format(Thnom,file_path))
     elif meta_data['format'] == 'flac':
-    	print (file_name)
+    	#print (file_name)
     	audio = FLAC(file_name)
     	audio["title"] = meta_data['musicName']
     	audio['album'] = meta_data['album']
     	audio['artist'] = meta_data['artist'][0][0]
     	audio['comment'] = meta_data['alias']
     	app = Picture()
-    	app.data = picdata
+    	app.data = image_data
     	app.type = mutagen.id3.PictureType.COVER_FRONT 
     	app.mime = u"image/jpeg"
     	audio.add_picture(app)
-    	#audio.save()
     	try:
     		audio.save()
+    	except:
+    		print ("\n" + '[!]Thread{} : [{}]FLAC Tags Save Error!'.format(Thnom,file_path))
+    	try:
+    		#audio.save()
     		arhhc = Getlrc(music_id)
     		if 'lrc' in arhhc:
-    			print (7)
-    			if len(arhhc['tlyric']['lyric']) < 1:
-    				pass
-    				try:
-    					f = open((music_lrc+'.lrc'),'w')
-    					f.write(str(arhhc['lrc']['lyric']))
-    					f.close()
-    				except:
-    					print ('[!][Thread:{}]LRC Get Error!'.format(Thnom))
+    			if not 'lyric' in arhhc['lrc']:
+    				print ('[!][Thread:{}][{}]No Lyric Flag Found!'.format(Thnom,file_path))
+    				return 4
+    			if len(arhhc['lrc']['lyric']) < 1:
+    				print ('[!][Thread:{}][{}]No Lyric Flag Found!'.format(Thnom,file_path))
+    				return 4
+    			try:
+    				open((music_lrc+'.lrc'),'w').write(str(arhhc['lrc']['lyric']))
+    			except:
+    				print ('[!][Thread:{}][{}]LRC Get Error!'.format(Thnom,file_path))
     		if 'tlyric' in arhhc:
+    			if not 'lyric' in arhhc['tlyric']:
+    				print ('[!][Thread:{}][{}]No Tlyric Flag Found!'.format(Thnom,file_path))
+    				return 4
     			if len(arhhc['tlyric']['lyric']) < 1:
-    				pass
+    				print ('[!][Thread:{}][{}]No Tlyric Flag Found!'.format(Thnom,file_path))
+    				return 4
     			else:
     				try:
-    					l = open((music_lrc+'.tlc'),'w')
-    					l.write(str(arhhc['tlyric']['lyric']))
-    					l.close()
+    					open((music_lrc+'.tlc'),'w').write(str(arhhc['tlyric']['lyric']))
     				except:
-        				print ('[!][Thread:{}]tlc Get Error!'.format(Thnom))
+        				print ('[!][Thread:{}][{}]tlc Get Error!'.format(Thnom,file_path))
     	except:
-    		print ('[!]Thread{} : FLAC Tags Save Error!'.format(Thnom))
+    		print('[!][Thread:{}][{}]FLAC lyric Get Error!'.format(Thnom,file_path))
     		sfnr='title:'+meta_data['musicName']+'#$#' + 'artist:' + meta_data['artist'][0][0] +'#$#' +'album:'+ meta_data['musicName']+ '#$#albumPic:'+meta_data['albumPic']
-    		rew =open((file_name+'.songinfo'),'w')
-    		rew.write(sfnr)
-    		rew.close()
-    		print ('[!][Thread:{}]Song Tags Has Been Saved On A SongInfo File!'.format(Thnom));
+    		open((file_name+'.songinfo'),'w').write(sfnr)
+    		open(music_lrc+'.jpg','wb').write(image_data)
+    		print ('[!][Thread:{}][{}]Song Tags Has Been Saved On A SongInfo File!'.format(Thnom,file_path));
     else:
-    		print ('[!][Thread:]{}Unknow Type:'.format(Thnom)+meta_data['format'])
+    		print ("\n" + '[!][Thread:{}]Unknow Type:'.format(Thnom)+meta_data['format'])
 
 def MultiThreadChild(list,Number):
 	global dfgg
 	global totsong
-	print ('[+][Thread:{}] Thread Ready! Get Task: {}'.format(Number,len(list)))
+	print ("\n" + '[+][Thread:{}] Thread Ready! Get Task: {}'.format(Number,len(list)))
 	for ncm1f in list:
 		time.sleep(Number)
 		try:
-			dump(ncm1f,Number)
 			totsong = totsong + 1
+			dump(ncm1f,Number)
 		except:
 			dfgg.write(ncm1f +'##File code Error!'+ "\n")
 			continue
-	print ('[+]Thread {} :Task Finish!'.format(Number))
+	print ("\n" + '[+]Thread {} :Task Finish!'.format(Number))
 
 if __name__ == '__main__':
 	global AllTheardNumber
@@ -275,10 +289,16 @@ if __name__ == '__main__':
 			t[ppo].start()
 			ncmlist = []
 	print ('')
+	nnu = 0
 	while(totsong < len(ncmfiles)):
-		sOUT ("\r" + '[MAIN]'+ '[' + time.asctime() +']Prograss: [' +  str(totsong) + '/' + str(len(ncmfiles)) + ']    ')
 		try:
-			time.sleep(10)
+			if nnu > 3:
+				sOUT ("\r" + '[MAIN]'+ '[' + time.asctime() +']Prograss: [' +  str(totsong) + '/' + str(len(ncmfiles)) + ']    ')
+				time.sleep(2)
+				nnu = 0
+			else:
+				nnu = nnu + 1
+				time.sleep(2)
 		except:
 			print ('[!]Warning! Main Thread Exit!')
 	print ('[MAIN]'+ '[' + time.asctime() +']Prograss: [' +  str(totsong) + '/' + str(len(ncmfiles)) + ']')
