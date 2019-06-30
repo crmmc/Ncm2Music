@@ -7,7 +7,7 @@
 #to install it!
 #it can be used on Windows,Linux,Mac on Python3 or Python2
 print ('*')
-print ('_  _          ___ __  __         _')
+print (' _  _          ___ __  __         _')
 print ('| \| |__ _ __ |_  )  \/  |_  _ __(_)__')
 print ("| .` / _| '  \ / /| |\/| | || (_-< / _|")
 print ('|_|\_\__|_|_|_/___|_|  |_|\_,_/__/_\__|')
@@ -145,7 +145,8 @@ def dump(file_path,Thnom):
     	mp3_info['artist'] = meta_data['artist'][0][0]
     	mp3_info['title'] = meta_data['musicName']
     	mp3_info['discsubtitle'] = meta_data['alias'] 
-    	mp3_info['lyricist'] = str(arhhc['lrc']['lyric'])
+    	#mp3_info['lyricist'] = str(arhhc['lrc']['lyric'])
+    	mp3_info['lyricist'] = str('Convent By Ncm2Music. CopyRight 2018-2019. KGDsave SoftWare Studio')
     	mp3_info.save()
     	hh = ID3(file_name)
     	hh.update_to_v23()
@@ -233,8 +234,8 @@ def MultiThreadChild(list,Number):
 	for ncm1f in list:
 		time.sleep(Number)
 		try:
-			totsong = totsong + 1
 			dump(ncm1f,Number)
+			totsong = totsong + 1
 		except:
 			dfgg.write(ncm1f +'##File code Error!'+ "\n")
 			continue
