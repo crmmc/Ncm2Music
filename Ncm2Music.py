@@ -5,27 +5,14 @@
 # Thanks for nondanee
 #need a tools use order: pip install pycryptodome mutagen requests urllib3
 #to install it!
-#it can be used on Windows,Linux,Mac on Python3 or Python2
-print ('*')
-print (' _  _          ___ __  __         _')
-print ('| \| |__ _ __ |_  )  \/  |_  _ __(_)__')
-print ("| .` / _| '  \ / /| |\/| | || (_-< / _|")
-print ('|_|\_\__|_|_|_/___|_|  |_|\_,_/__/_\__|')
-print ('===============================')
-print ('CopyRight 2018-2020 KGDSAVE SOFTWARE STUDIO')
-print ('Coded by CRMMC')
-print ('Sources: github.com/crmmc/Ncm2Music')
-print ('This is a tool to convent ncm file to music ')
-print ('add Music tags and get lyric,picture')
-print ('===============================')
-print ('')
-print ('[MAIN]Importing Librarys')
+#it can be used on Windows,Linux,Mac on Python3
 import binascii
 import struct
 import base64
 import json
 import time
-import threading
+from multiprocessing import Process
+import multiprocessing
 import re
 import os
 import sys
@@ -40,12 +27,7 @@ from mutagen.flac import FLAC
 from mutagen.flac import Picture
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import COMM,APIC,ID3
-if sys.version_info < (3, 4):
-    print ('[MAIN]Running in Python2')
-    print ('[MAIN]reset system encoding to utf-8')
-    reload(sys)
-    sys.setdefaultencoding('utf-8')
-print ('[MAIN]Library Load OK!')
+
 
 def Getlrc(neteaseID):
 	lrc_url = 'http://music.163.com/api/song/lyric?' + 'id=' + str(neteaseID) + '&lv=1&kv=1&tv=-1'
@@ -58,6 +40,15 @@ def sOUT(text):
 	sys.stdout.write(text)
 	sys.stdout.flush()
 
+
+def EOut(text):
+	try:
+		d = open('ncm2music_error.txt','a')
+		d.write(text)
+		d.close()
+	except:
+		print ('[!]Open log file error!')
+	return 0
 def dump(file_path,Thnom):
     core_key = binascii.a2b_hex("687A4852416D736F356B496E62617857")
     meta_key = binascii.a2b_hex("2331346C6A6B5F215C5D2630553C2728")
@@ -107,7 +98,7 @@ def dump(file_path,Thnom):
     file_name = meta_data['musicName'] + ' - ' + meta_data['artist'][0][0] + '.' + meta_data['format']
     #file_name = str(file_name)
     if os.path.exists(file_name):
-        print ("\n" + '[+][Thread:{}]Now '.format(Thnom) + '[' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
+        print ("\n" + '[+][Process:{}]Now '.format(Thnom) + '[' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
         print ('[!]File is exist!')
         if (os.path.getsize(file_name) < (os.path.getsize(file_path) - (3*1024))):
             print ('[!]Bad File!')
@@ -115,7 +106,7 @@ def dump(file_path,Thnom):
             dump(file_path,Thnom)
             return 0
     else:
-    	print ("\n" + '[+][Thread:{}]Now '.format(Thnom) + '[' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
+    	print ("\n" + '[+][Process:{}]Now '.format(Thnom) + '[' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
     	m = open((os.path.join(os.path.split(file_path)[0],file_name)),'wb')
     	chunk = bytearray()
     	while True:
@@ -138,7 +129,7 @@ def dump(file_path,Thnom):
     		picurl = meta_data['albumPic']
     		image_data = requests.get(picurl).content
     	except:
-    		print ("\n" + '[!][Thread:{}][{}]Get Picture From Internet Error!'.format(Thnom,file_path))
+    		print ("\n" + '[!][Process:{}][{}]Get Picture From Internet Error!'.format(Thnom,file_path))
     if meta_data['format'] == 'mp3':
     	mp3_info = MP3(file_name, ID3=EasyID3)
     	mp3_info['album'] = meta_data['album']
@@ -156,26 +147,26 @@ def dump(file_path,Thnom):
     		hh.save()
     	except:
     		open(music_lrc+'.jpg','wb').write(image_data)
-    		print ("\n" + '[!]Thread{} : [{}]MP3 Tags Save Error!'.format(Thnom,file_path))
+    		print ("\n" + '[![Process{} : [{}]MP3 Tags Save Error!'.format(Thnom,file_path))
     	arhhc = ''
     	try:
     		arhhc = Getlrc(music_id)
     	except:
-    		print ("\n" + '[!]Thread{} :[{}] Get MP3 LRC Error!'.format(Thnom,file_path))
+    		print ("\n" + '[![Process{} :[{}] Get MP3 LRC Error!'.format(Thnom,file_path))
     	if 'lrc' in arhhc:
         	try:
         		f = open((music_lrc+'.lrc'),'w')
         		f.write(str(arhhc['lrc']['lyric']))
         		f.close()
         	except:
-        		print ('[!][Thread:{}][{}]LRC Get Error!'.format(Thnom,file_path))
+        		print ('[!][Process:{}][{}]LRC Get Error!'.format(Thnom,file_path))
     	if 'tlyric' in arhhc:
     		try:
     			l = open((music_lrc+'.tlc'),'w')
     			l.write(str(arhhc['tlyric']['lyric']))
     			l.close()
     		except:
-        		print ('[!][Thread:{}][{}]tlc Get Error!'.format(Thnom,file_path))
+        		print ('[!][Process:{}][{}]tlc Get Error!'.format(Thnom,file_path))
     elif meta_data['format'] == 'flac':
     	#print (file_name)
     	audio = FLAC(file_name)
@@ -191,58 +182,68 @@ def dump(file_path,Thnom):
     	try:
     		audio.save()
     	except:
-    		print ("\n" + '[!]Thread{} : [{}]FLAC Tags Save Error!'.format(Thnom,file_path))
+    		print ("\n" + '[![Process{} : [{}]FLAC Tags Save Error!'.format(Thnom,file_path))
     	try:
     		#audio.save()
     		arhhc = Getlrc(music_id)
     		if 'lrc' in arhhc:
     			if not 'lyric' in arhhc['lrc']:
-    				print ('[!][Thread:{}][{}]No Lyric Flag Found!'.format(Thnom,file_path))
+    				print ('[!][Process:{}][{}]No Lyric Flag Found!'.format(Thnom,file_path))
     				return 4
     			if len(arhhc['lrc']['lyric']) < 1:
-    				print ('[!][Thread:{}][{}]No Lyric Flag Found!'.format(Thnom,file_path))
+    				print ('[!][Process:{}][{}]No Lyric Flag Found!'.format(Thnom,file_path))
     				return 4
     			try:
     				open((music_lrc+'.lrc'),'w').write(str(arhhc['lrc']['lyric']))
     			except:
-    				print ('[!][Thread:{}][{}]LRC Get Error!'.format(Thnom,file_path))
+    				print ('[!][Process:{}][{}]LRC Get Error!'.format(Thnom,file_path))
     		if 'tlyric' in arhhc:
     			if not 'lyric' in arhhc['tlyric']:
-    				print ('[!][Thread:{}][{}]No Tlyric Flag Found!'.format(Thnom,file_path))
+    				print ('[!][Process:{}][{}]No Tlyric Flag Found!'.format(Thnom,file_path))
     				return 4
     			if len(arhhc['tlyric']['lyric']) < 1:
-    				print ('[!][Thread:{}][{}]No Tlyric Flag Found!'.format(Thnom,file_path))
+    				print ('[!][Process:{}][{}]No Tlyric Flag Found!'.format(Thnom,file_path))
     				return 4
     			else:
     				try:
     					open((music_lrc+'.tlc'),'w').write(str(arhhc['tlyric']['lyric']))
     				except:
-        				print ('[!][Thread:{}][{}]tlc Get Error!'.format(Thnom,file_path))
+        				print ('[!][Process:{}][{}]tlc Get Error!'.format(Thnom,file_path))
     	except:
-    		print('[!][Thread:{}][{}]FLAC lyric Get Error!'.format(Thnom,file_path))
+    		print('[!][Process:{}][{}]FLAC lyric Get Error!'.format(Thnom,file_path))
     		sfnr='title:'+meta_data['musicName']+'#$#' + 'artist:' + meta_data['artist'][0][0] +'#$#' +'album:'+ meta_data['musicName']+ '#$#albumPic:'+meta_data['albumPic']
     		open((file_name+'.songinfo'),'w').write(sfnr)
     		open(music_lrc+'.jpg','wb').write(image_data)
-    		print ('[!][Thread:{}][{}]Song Tags Has Been Saved On A SongInfo File!'.format(Thnom,file_path));
+    		print ('[!][Process:{}][{}]Song Tags Has Been Saved On A SongInfo File!'.format(Thnom,file_path));
     else:
-    		print ("\n" + '[!][Thread:{}]Unknow Type:'.format(Thnom)+meta_data['format'])
+    		print ("\n" + '[!][Process:{}]Unknow Type:'.format(Thnom)+meta_data['format'])
 
 def MultiThreadChild(list,Number):
-	global dfgg
-	global totsong
-	print ("\n" + '[+][Thread:{}] Thread Ready! Get Task: {}'.format(Number,len(list)))
+	print ("\n" + '[+][Process:{}] Process Ready! Get Task: {}'.format(Number,len(list)))
 	for ncm1f in list:
 		time.sleep(Number)
 		try:
 			dump(ncm1f,Number)
-			totsong = totsong + 1
 		except:
-			dfgg.write(ncm1f +'##File code Error!'+ "\n")
+			EOut(ncm1f +'##File code Error!'+ "\n")
 			continue
-	print ("\n" + '[+]Thread {} :Task Finish!'.format(Number))
+	print ("\n" + '[+][Process {} :Task Finish!'.format(Number))
 
 if __name__ == '__main__':
-	global AllTheardNumber
+	print ('*')
+	print (' _  _          ___ __  __         _')
+	print ('| \| |__ _ __ |_  )  \/  |_  _ __(_)__')
+	print ("| .` / _| '  \ / /| |\/| | || (_-< / _|")
+	print ('|_|\_\__|_|_|_/___|_|  |_|\_,_/__/_\__|')
+	print ('===============================')
+	print ('CopyRight 2018-2020 KGDSAVE SOFTWARE STUDIO')
+	print ('Coded by CRMMC')
+	print ('Sources: github.com/crmmc/Ncm2Music')
+	print ('This is a tool to convent ncm file to music ')
+	print ('add Music tags and get lyric,picture')
+	print ('===============================')
+	print ('Time: ' + time.asctime())
+	time.sleep(2)
 	AllTheardNumber = 4
 	ncmfiles = glob.glob("*.ncm")
 	if len(ncmfiles) < 1:
@@ -251,18 +252,11 @@ if __name__ == '__main__':
 	if len(ncmfiles) < AllTheardNumber:
 		AllTheardNumber = len(ncmfiles)
 	t=[0,]*AllTheardNumber
-	global dfgg
-	global totsong
-	totsong = 0
 	print ('[MAIN]Running in a '+ sys.platform + ' system')
-	try:
-		dfgg = open('ncm2music_error.txt','a')
-	except:
-		print ('[!]Open log file error!')
 	print ('[MAIN]There are ' + str(len(ncmfiles)) + ' Files ')
 	ttbig = 0
 	for tii in ncmfiles:
-		ttbig = ttbig + os.path.getsize(tii)/1024/1024.0*1
+		ttbig = ttbig + os.path.getsize(tii)/1024/1024.0*3.4
 	dw = 's'
 	if ttbig > 60:
 		ttbig = ttbig / 60.0
@@ -271,8 +265,10 @@ if __name__ == '__main__':
 			ttbig = ttbig / 60.0
 			dw = 'h'
 	print ('[MAIN]eta ' + str(round(ttbig,2)) + ' ' + dw)
-	print ('[MAIN]Open {} Threads To Convent This Files!'.format(AllTheardNumber))
+	print ('[MAIN]Open {} Processes To Convent This Files!'.format(AllTheardNumber))
 	print ('[MAIN]Press "Ctrl + c" to stop convent')
+	#print (type(totsong.get()))
+	#print (len(ncmfiles))
 	last = int(len(ncmfiles) % AllTheardNumber)
 	avg = int((len(ncmfiles)-last)/AllTheardNumber)
 	for ppo in range(0,AllTheardNumber):
@@ -280,31 +276,28 @@ if __name__ == '__main__':
 		if ppo == (AllTheardNumber - 1):
 			for o in range(int(avg*ppo),int(avg * (ppo+1)+ last)):
 				ncmlist.append(ncmfiles[o])
-			t[ppo] =threading.Thread(target=MultiThreadChild,args=(ncmlist,ppo),daemon=True)
+			t[ppo] =Process(target=MultiThreadChild,args=(ncmlist,ppo),)
+			t[ppo].daemon=True
 			t[ppo].start()
 			ncmlist = []
 		else:
 			for o in range(int(avg*ppo),int(avg * (ppo+1) )):
 				ncmlist.append(ncmfiles[o])
-			t[ppo] =threading.Thread(target=MultiThreadChild,args=(ncmlist,ppo),daemon=True)
+			t[ppo] =Process(target=MultiThreadChild,args=(ncmlist,ppo),)
+			t[ppo].daemon=True
 			t[ppo].start()
 			ncmlist = []
-	print ('')
 	nnu = 0
-	while(totsong < len(ncmfiles)):
-		try:
-			if nnu > 3:
-				sOUT ("\r" + '[MAIN]'+ '[' + time.asctime() +']Prograss: [' +  str(totsong) + '/' + str(len(ncmfiles)) + ']    ')
-				time.sleep(2)
-				nnu = 0
-			else:
-				nnu = nnu + 1
-				time.sleep(2)
-		except:
-			print ('[!]Warning! Main Thread Exit!')
-	print ('[MAIN]'+ '[' + time.asctime() +']Prograss: [' +  str(totsong) + '/' + str(len(ncmfiles)) + ']')
-	if os.path.getsize('ncm2music_error.txt') < 10:
-		os.remove('ncm2music_error.txt')
+	time.sleep(3)
+	print ('[Main] Waiting until All Process Done!')
+	try:
+		for k in t:
+			k.join()
+	except:
+		print ('[!]Warning! Main Thread Exit!')
+	print ('[MAIN]'+ '[' + time.asctime() +']')
+	if os.path.exists('ncm2music_error.txt'):
+		if os.path.getsize('ncm2music_error.txt') < 10:
+			os.remove('ncm2music_error.txt')
 	print ("[MAIN]ALL Jobs Done!")
-	dfgg.close()
 

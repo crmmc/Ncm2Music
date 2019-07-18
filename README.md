@@ -3,8 +3,8 @@
 <h2>简介</h2>
 
 
-<p>Python版本解密ncm文件，根据贴吧某位大神的源码再开发而来，加了很多使用功能，比如嵌入歌曲tags和封面图片<del>(flac嵌入图片有问题，但是保存为同名文件播放器是可以识别的,想要嵌入文件的童鞋可以自己琢磨一下mutagen库)</del>还有下载歌词啥的。</p>
-<p6>flac文件内嵌图片功能已修复!</p6>
+<p>Python版本解密ncm文件，根据贴吧某位大神的源码再开发而来，加了很多使用功能，比如嵌入歌曲tags和封面图片，下载歌词啥的。</p>
+<p6>flac文件和mp3文件正常内嵌图片和写入歌曲信息</p6>
 
 <h2>安装</h2>
 <h3 style="background-color:green">依赖 pycrypto库</h3>
@@ -20,11 +20,11 @@
 您可以将NCM文件任意更名，就算更名也能输出正常的音乐文件歌手和歌曲名，因为这些数据被保存在ncm文件内了
 <p style="background-color:red"><u>推荐在转换前将ncm文件全部更名为1.ncm,2.ncm,3.ncm.....这样可以防止因文件名内含有特殊字符导致的转换出错!这样改名并没有害处!</u></p>
 <h5>高端操作</h5>
-<p>开一个Ncm2Muaic线程只能占用1个CPU核心的50%，将主程序(Ncm2Music.py)的第227行的变量AllTheardNumber的值更改为(CPU核心数 - 1)*2，速度最快!!!</p>
+<p>开一个Ncm2Muaic线程只能占用1个CPU核心的50%，将主程序(Ncm2Music.py)的第246行的变量AllTheardNumber的值更改为(CPU核心数 - 1)*2，速度最快!!!</p>
 <img src="html/ss1.png" width=330 height=200>
 <h3>文件列表:</h3>
-<p>-----Ncm2Music.py 程序主体，推荐使用pyinstaller编译出来使用，直接运行于python2和3中</p>
-<p>-----Ncm2Music_py2.py 此版本显示的歌曲信息更详细，没啥区别,但是这个版本我维护的不是很频繁，不推荐使用。</p>
+<p>-----Ncm2Music.py 程序主体，推荐使用pyinstaller编译出来使用，仅运行于python3中</p>
+<p>-----Ncm2Music_py2.py 此版本单线程转换，使用python2,显示的歌曲信息更详细，没啥区别,但是这个版本我已经不维护了，不推荐使用。</p>
 <p>-----ncmdump.py 某贴吧大神的ncm文件转换器，此文件是源代码，上传供大家使用，代码来源可以在github上搜ncmdump这个项目</p>
 <p>-----lrcget.py 根据网易云歌曲ID来获取歌词的源码，上传供大家使用，原理来自互联网。</p>
 <p>-----SongList_LRC_Getter.py 获取一个歌单里所有歌曲的歌词，可以单独使用来获取歌词，普通歌词保存为lrc翻译歌词保存为tlyric,但是只能在Python2环境下运行</p>
@@ -49,12 +49,12 @@
     <dd>第五次更新---加入了合并歌词的功能，能将外语歌词和原版歌词合并到一个lrc文件</dd>
   <dt><kbd>2019.4.13</kbd></dt>
     <dd>第6次更新---主程序加入多线程功能，并行转换效率提高，建议线程数=(CPU核心数 - 1) * 2,效率最高！</dd>
+  <dt><kbd>2019.7.18</kbd></dt>
+    <dd>第7次更新---重大更新！！在了解到Python有GIL(全局资源锁)机制后，立马寻找解决方法。重构部分代码，现在是真正的并行转换了，能充分利用好每个CPU核心，大幅度加快转换速度！！！无敌的存在！</dd>
 </dl>
 
 
 <h2>例图</h2>
-<p>使用Python2运行Ncm2Music</p>
-<img src="html/s1.jpg" width=300 height=450></img>
 <p>使用Python3运行Ncm2Music</p>
 <img src="html/s3.jpg" width=300 height=420></img>
 <p>转换输出后得到的文件</p>
@@ -65,7 +65,7 @@
 <img src="html/s6.jpg"width=300 height=80></img>
 <p>合并原版歌词和翻译歌词</p>
 <img src="html/s7.png" width=330 height=100></img>
-<p>4核心开4个Ncm2Music图片</p>
+<p>默认情况下(默认4个进程运算)运行Ncm2Music图片</p>
 <img src="html/s2.jpg" width=330 height=150></img>
-<p>多线程转换，每线程大约能占用一个CPU核心的50%左右,我测试开了多线程后并不能减少单个文件的转换时间，但是每个线程都是同步运行的，互相没有速度干扰，这对转换很多文件的人非常友好！而且我测试2线程转2文件对比单线程转2文件从137秒提升到了80秒完成！</p>
+<p>多进程转换，速度大幅度提高！</p>
 <img src="html/s8.png" width=330 height=450></img>
