@@ -6,6 +6,7 @@
 #need a tools use order: pip install pycryptodome mutagen requests urllib3
 #to install it!
 #it can be used on Windows,Linux,Mac on Python3
+#import FeMultiSupport
 import binascii
 import struct
 import base64
@@ -102,7 +103,7 @@ def dump(file_path,Thnom):
         print ('[!]File is exist!')
         if (os.path.getsize(file_name) < (os.path.getsize(file_path) - (3*1024))):
             print ('[!]Bad File!')
-            os.remove(file_name)
+            DelFile(file_name)
             dump(file_path,Thnom)
             return 0
     else:
@@ -210,7 +211,7 @@ def dump(file_path,Thnom):
     				except:
         				print ('[!][Process:{}][{}]tlc Get Error!'.format(Thnom,file_path))
     	except:
-    		print('[!][Process:{}][{}]FLAC lyric Get Error!'.format(Thnom,file_path))
+    		print ('[!][Process:{}][{}]FLAC lyric Get Error!'.format(Thnom,file_path))
     		sfnr='title:'+meta_data['musicName']+'#$#' + 'artist:' + meta_data['artist'][0][0] +'#$#' +'album:'+ meta_data['musicName']+ '#$#albumPic:'+meta_data['albumPic']
     		open((file_name+'.songinfo'),'w').write(sfnr)
     		open(music_lrc+'.jpg','wb').write(image_data)
@@ -229,7 +230,83 @@ def MultiThreadChild(list,Number):
 			continue
 	print ("\n" + '[+][Process {} :Task Finish!'.format(Number))
 
+def delname():
+	print ('del empty files!')
+	for r in glob.glob('*'):
+		if os.path.getsize(r) < 32:
+			DelFile(r)
+			print ('[' + r + '] Delete !')
+
+def MV(sfrom,sto):
+  if len(sfrom) < 0:
+    return 2
+  if sys.platform.find("win") > -1:
+    return os.system('move "' + sfrom + '" "' + sto + '"')
+  elif sys.platform.find("linux") > -1:
+    return os.system('mv "' + sfrom + '" "' + sto + '"')
+  return 1  
+
+def DelFile(dlname):
+  if len(dlname) < 0:
+    return 2
+  if sys.platform.find("win") > -1:
+    return os.system('del /F /Q "' + dlname + '"')
+  elif sys.platform.find("linux") > -1:
+    return os.system('rm -rf "' + dlname + '"')
+  return 1  
+def turnname():
+	print ('ALL lrc to ylc')
+	for t in glob.glob('*.lrc'):
+		MV(t,t.replace('.lrc','') + '.ylc"')  #os.rename(t,t.replace('.lrc1','') + '.ylc')
+	print ('ALL Tlrc to tlc')
+	for y in glob.glob('*.tlyric'):
+		MV(y,y.replace('.tlyric','') + '.tlc"')  #os.rename(y,y.replace('.tlyric','') + '.tlc')
+		
+		
+def gtm(gyy):
+	return re.findall(r'\[(.*?)\]',gyy)
+	
+def lastss():
+	for y in glob.glob('*.ylc'):
+		MV( y,y.replace('.ylc','.lrc"'))
+	for y in glob.glob('*.tlc'):
+		MV(y,y.replace('.tlc','.lrc"'))
+
+def hebing(songname):
+	ty1 = songname + '.ylc'
+	ty2 = songname + '.tlc'
+	print ('[Lyric: ' + songname + '] ===> [' + songname + '.lrc]')
+	ttty= open(songname + '.lrc','w')
+	tt1 = open(ty1,'r').read()
+	tt2 = open(ty2,'r').read()
+	yn = tt2.split("\n")
+	for yu in tt1.split("\n"):
+		gh = ""
+		for i in yn:
+			try:
+				if (gtm(i) == gtm(yu)) or (str(gtm(i)[0]) + '0' == str(gtm(yu)[0])) or (str(gtm(i)[0]) == str(gtm(yu)[0]) + '0') or (gtm(i)[0] == gtm(yu)[0]):
+					ttty.write(yu +"\n" + i + "\n")
+					#print (yu +"\n" + i)
+				else:
+					#print (gtm(i)[0] + ' <> ' + gtm(yu)[0])
+					continue
+			except:
+				continue
+	ttty.close()
+	try:
+		if os.path.getsize(songname + '.lrc') > (os.path.getsize(songname + '.ylc')/2):
+			DelFile(ty1)
+			DelFile(ty2)
+		else:
+			print ('Error!    ' + ty1)
+			DelFile(songname + '.lrc')
+	except:
+		print ('REMOVE ' + ty1 + ' & ' + ty2 + ' FAILD!')
+
+
+
 if __name__ == '__main__':
+	multiprocessing.freeze_support()
 	print ('*')
 	print (' _  _          ___ __  __         _')
 	print ('| \| |__ _ __ |_  )  \/  |_  _ __(_)__')
@@ -248,7 +325,7 @@ if __name__ == '__main__':
 	ncmfiles = glob.glob("*.ncm")
 	if len(ncmfiles) < 1:
 		print ('[MAIN]NCM Files No Found!')
-		exit (0)
+		os._exit(0)
 	if len(ncmfiles) < AllTheardNumber:
 		AllTheardNumber = len(ncmfiles)
 	t=[0,]*AllTheardNumber
@@ -298,6 +375,15 @@ if __name__ == '__main__':
 	print ('[MAIN]'+ '[' + time.asctime() +']')
 	if os.path.exists('ncm2music_error.txt'):
 		if os.path.getsize('ncm2music_error.txt') < 10:
-			os.remove('ncm2music_error.txt')
+			DelFile('ncm2music_error.txt')
+	delname()
+	turnname()
+	#os.system('clear')
+	for i in glob.glob('*.ylc'):
+		hhiu = "./" + i.replace('.ylc','')
+		if os.path.exists(hhiu + '.tlc'):
+			hebing(hhiu)
+	delname()
+	lastss()
 	print ("[MAIN]ALL Jobs Done!")
 

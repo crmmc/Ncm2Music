@@ -1,7 +1,5 @@
-#!/bin/env python2
+#!/bin/env python3
 import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
 from bs4 import BeautifulSoup
 import time,os,re,json,requests
 def Getlrc(neteaseID):
@@ -38,7 +36,7 @@ def download(songlistID):
     	if 'lrc' in arhhc:
         	try:
     			if os.path.exists(music_lrc+'.lrc'):
-    				print 'LYRIC:' + music_lrc+'.lrc' + 'File exist!'
+    				print ('LYRIC:' + music_lrc+'.lrc' + 'File exist!')
     				break
         		f = open(music_lrc+'.lrc','w')
         		f.write(str(arhhc['lrc']['lyric'].encode('utf-8')))
@@ -51,7 +49,7 @@ def download(songlistID):
         		break
     		try:
     			if os.path.exists(music_lrc+'.tlc'):
-    				print 'LYRIC:' + music_lrc+'.tlc' + 'File exist!'
+    				print ('LYRIC:' + music_lrc+'.tlc' + 'File exist!')
     				continue
     			l = open(music_lrc+'.tlc','w')
     			l.write(str(arhhc['tlyric']['lyric'].encode('utf-8')))
@@ -66,7 +64,7 @@ errorfile.write(str(time.asctime()).encode('utf-8') + "\n")
 download(2117303846)
 errorfile.close()
 import glob,os
-print 'Turning Names.....'
+print ('Turning Names.....')
 for i in glob.glob('*.mp3'):
 	hg = i.split('.')[0].split(' - ')
 	if len(hg) == 2:
@@ -80,7 +78,7 @@ for i in glob.glob('*.mp3'):
 		if os.path.exists(an):
 			print ('[' + an + ']>>>[' + anr + ']')
 			os.rename(an,anr)
-print 'MP3 Lyric Turn Done!'
+print ('MP3 Lyric Turn Done!')
 for i in glob.glob('*.flac'):
 	hg = i.split('.')[0].split(' - ')
 	if len(hg) == 2:
