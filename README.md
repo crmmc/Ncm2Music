@@ -5,9 +5,9 @@
 
 <p>Python版本解密ncm文件，根据贴吧某位大神的源码再开发而来，加了很多使用功能，比如嵌入歌曲tags和封面图片，下载歌词啥的。</p>
 <p5>投稿了使用教程在B站上的: <p5>
-[B站视频](https://www.bilibili.com/video/av59847987/ "点我前往")
+https://www.bilibili.com/video/av59847987/
 <p6>flac文件和mp3文件正常内嵌图片和写入歌曲信息</p6>
-
+一个在Win10上编译好的版本(使用源码和编译时间: 2019.7.19--16:30) : https://www.lanzous.com/i528che
 <h2>安装</h2>
 <h3 style="background-color:green">依赖 pycrypto库</h3>
 
