@@ -86,6 +86,8 @@ def GetLrcF(id,sname):
 	except:
 		EOut('ERROR_IN_WRITE_ALL_lyric_tlyric:'+music_name+"\n")
 			
+def CFG(a):
+	return a.replace('：','').replace('[','').replace(']','').replace('。','').replace('？','').replace('，','').replace('“','').replace('”','').replace('"','').replace("'",'').replace(':','_').replace('/','')
 
 def dump(file_path,Thnom):
     core_key = binascii.a2b_hex("687A4852416D736F356B496E62617857")
@@ -134,7 +136,7 @@ def dump(file_path,Thnom):
     image_size = struct.unpack('<I', bytes(image_size))[0]
     image_data = f.read(image_size)
     file_name = meta_data['musicName'] + ' - ' + meta_data['artist'][0][0] + '.' + meta_data['format']
-    #file_name = str(file_name)
+    file_name = CFG(file_name)
     if os.path.exists(file_name):
         print ("\n" + '[+][Process:{}]Now '.format(Thnom) + '[' + str(meta_data['format']) + ']['  + 'MusicID:' + str(meta_data['musicId']) + ']['+ str(meta_data['bitrate']/1000) + 'kbps] [' + str(file_path) +']>>>[' + str(file_name) + ']')
         print ('[!]File is exist!')
@@ -159,9 +161,9 @@ def dump(file_path,Thnom):
     	m.close()
     	f.close()
     music_id = meta_data['musicId']
-    music_name = meta_data['musicName']
-    music_lrc = meta_data['musicName'] + ' - ' + meta_data['artist'][0][0]
-    if len(image_data) < 500:
+    music_name = file_name.split(' - ')[0]
+    music_lrc = file_name.replace('.' + str(meta_data['format']),'')
+    if len(image_data) < 1000:
     	try:
     		picurl = meta_data['albumPic']
     		image_data = requests.get(picurl).content

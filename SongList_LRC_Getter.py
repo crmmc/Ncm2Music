@@ -89,4 +89,4 @@ for i in glob.glob('*.flac'):
 		if os.path.exists(sn):
 			print ('[' + sn + ']>>>[' + snd + ']')
 			os.rename(sn,snd)
-print 'FLAC Lyric turn done!'
+print ('FLAC Lyric turn done!')
