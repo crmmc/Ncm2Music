@@ -28,6 +28,7 @@ https://www.bilibili.com/video/av59847987/
 <p>-----Ncm2Music.py 程序主体，使用pyinstaller编译出来使用更方便，必须使用版本大于3.3的pyinstaller编译，否则多进程模块会出问题。主程序仅运行于python3中</p>
 <p>-----SongList_LRC_Getter.py 获取一个歌单里所有歌曲的歌词，可以单独使用来获取歌词，普通歌词保存为lrc翻译歌词保存为tlc</p>
 <p>-----Song_LRC_Tlyric_copy.py 合并lyric和tlyric文件的脚本</p>
+<p>-----SongFilesLRC_Get.py 可以为目录下所有没有歌词的歌曲下载歌词的脚本,放在歌曲目录下运行就好了，自动合并中外文歌词。（歌词来源：网易云音乐）</p>
 <p>-----README.md 说明文件</p>
 
 编译使用命令:
@@ -54,6 +55,8 @@ https://www.bilibili.com/video/av59847987/
     <dd>第7次更新---重大更新！！在了解到Python有GIL(全局资源锁)机制后，立马寻找解决方法。重构部分代码，现在是真正的并行转换了，能充分利用好每个CPU核心，大幅度加快转换速度！！！无敌的存在!</dd>
   <dt><kbd>2019.7.19</kbd></dt>
     <dd>第8次更新---删除了项目里没用的文件，所有脚本更新迁移至Python3</dd>
+  <dt><kbd>2019.8.7</kbd></dt>
+    <dd>第9次更新---增加了SongFilesLRC_Get.py,优化了一些脚本里的操作。</dd>
 </dl>
 
 

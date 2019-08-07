@@ -125,7 +125,7 @@ def dump(file_path,Thnom):
     music_name = meta_data['musicName']
     music_lrc = meta_data['musicName'] + ' - ' + meta_data['artist'][0][0]
     #print (len(image_data))
-    if len(image_data) < 10000:
+    if len(image_data) < 500:
     	try:
     		picurl = meta_data['albumPic']
     		image_data = requests.get(picurl).content

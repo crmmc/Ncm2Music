@@ -10,13 +10,13 @@ def delname():
 			print ('[' + r + '] Delete !')
 
 def MV(sfrom,sto):
-  if len(sfrom) < 0:
-    return 2
-  if sys.platform.find("win") > -1:
-    return os.system('move "' + sfrom + '" "' + sto + '"')
-  elif sys.platform.find("linux") > -1:
-    return os.system('mv "' + sfrom + '" "' + sto + '"')
-  return 1  
+	if len(sfrom) < 0:
+		return 2
+	if sys.platform.find("win") > -1:
+		return os.system('move "' + sfrom + '" "' + sto + '"')
+	elif sys.platform.find("linux") > -1:
+		return os.system('mv "' + sfrom + '" "' + sto + '"')
+	return 1  
 
 def turnname():
 	print ('ALL lrc to ylc')
@@ -62,7 +62,7 @@ def hebing(songname):
 			os.remove(ty1)
 			os.remove(ty2)
 		else:
-			print ('Error!    ' + ty1)
+			print ('Error!	' + ty1)
 			os.remove(songname + '.lrc')
 	except:
 		print ('REMOVE ' + ty1 + ' & ' + ty2 + ' FAILD!')
