@@ -231,8 +231,11 @@ def delname():
 	print ('del empty files!')
 	for r in glob.glob('*'):
 		if os.path.getsize(r) < 32:
-			DelFile(r)
-			print ('[' + r + '] Delete !')
+			try:
+				os.remove(r)
+				print ('[' + r + '] Delete !')
+			except:
+				print ('[' + r + '] Delete Error!')
 
 def gtm(gyy):
 	return re.findall(r'\[(.*?)\]',gyy)
@@ -265,7 +268,7 @@ if __name__ == '__main__':
 	print ('[MAIN]There are ' + str(len(ncmfiles)) + ' Files ')
 	ttbig = 0
 	for tii in ncmfiles:
-		ttbig = ttbig + os.path.getsize(tii)/1024/1024.0*3.4
+		ttbig = ttbig + os.path.getsize(tii)/1024/1024.0*1.5
 	dw = 's'
 	if ttbig > 60:
 		ttbig = ttbig / 60.0
@@ -295,7 +298,7 @@ if __name__ == '__main__':
 			t[ppo].start()
 			ncmlist = []
 	nnu = 0
-	time.sleep(3)
+	time.sleep(AllTheardNumber + 2)
 	print ('[Main] Waiting until All Process Done!')
 	try:
 		for k in t:
