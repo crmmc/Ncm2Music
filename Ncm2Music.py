@@ -6,7 +6,6 @@
 #need a tools use order: pip install pycryptodome mutagen requests urllib3
 #to install it!
 #it can be used on Windows,Linux,Mac on Python3
-#import FeMultiSupport
 import binascii
 import struct
 import base64
@@ -30,13 +29,6 @@ from mutagen.easyid3 import EasyID3
 from mutagen.id3 import COMM,APIC,ID3
 
 
-def Getlrc(neteaseID):
-	lrc_url = 'http://music.163.com/api/song/lyric?' + 'id=' + str(neteaseID) + '&lv=1&kv=1&tv=-1'
-	lyric = requests.get(lrc_url)
-	json_obj = lyric.text
-	j = json.loads(json_obj)
-	return j
-
 def sOUT(text):
 	sys.stdout.write(text)
 	sys.stdout.flush()
@@ -50,6 +42,51 @@ def EOut(text):
 	except:
 		print ('[!]Open log file error!')
 	return 0
+	
+def TwoToOne(l1,l2):
+	yn = l2.split("\n")
+	ttty = ''
+	for yu in l1.split("\n"):
+		gh = ""
+		for i in yn:
+			try:
+				if (gtm(i) == gtm(yu)) or (str(gtm(i)[0]) + '0' == str(gtm(yu)[0])) or (str(gtm(i)[0]) == str(gtm(yu)[0]) + '0') or (gtm(i)[0] == gtm(yu)[0]):
+					ttty = ttty + yu +"\n" + i + "\n"
+				else:
+					continue
+			except:
+				continue
+	return ttty
+
+def GetLrcF(id,sname):
+	try:
+		lrc_url = 'http://music.163.com/api/song/lyric?' + 'id=' + str(id) + '&lv=1&kv=1&tv=-1'
+		lyric = requests.get(lrc_url)
+		json_obj = lyric.text
+		arhhc = json.loads(json_obj)
+	except:
+		print ('Get lrc error!')
+		EOut('ERROR_IN_GET_HTML_lyric_tlyric:'+music_name+"\n")
+		return ''
+	try:
+		if len(arhhc['lrc']['lyric']) < 10:
+			return -1
+	except:
+		EOut('ERROR_IN_GET_ALL_lyric_tlyric:'+music_name+"\n")
+	if 'tlyric' in arhhc:
+		if 'lyric' in arhhc['tlyric']:
+			tolrc = TwoToOne(str(arhhc['lrc']['lyric']),str(arhhc['tlyric']['lyric']))
+		else:
+			tolrc = str(arhhc['lrc']['lyric'])
+	else:
+		tolrc = str(arhhc['lrc']['lyric'])
+	try:
+		open(sname + '.lrc' ,'w').write(tolrc)
+		print ('Get [' + sname + '] Successful!')
+	except:
+		EOut('ERROR_IN_WRITE_ALL_lyric_tlyric:'+music_name+"\n")
+			
+
 def dump(file_path,Thnom):
     core_key = binascii.a2b_hex("687A4852416D736F356B496E62617857")
     meta_key = binascii.a2b_hex("2331346C6A6B5F215C5D2630553C2728")
@@ -124,7 +161,6 @@ def dump(file_path,Thnom):
     music_id = meta_data['musicId']
     music_name = meta_data['musicName']
     music_lrc = meta_data['musicName'] + ' - ' + meta_data['artist'][0][0]
-    #print (len(image_data))
     if len(image_data) < 500:
     	try:
     		picurl = meta_data['albumPic']
@@ -149,27 +185,11 @@ def dump(file_path,Thnom):
     	except:
     		open(music_lrc+'.jpg','wb').write(image_data)
     		print ("\n" + '[![Process{} : [{}]MP3 Tags Save Error!'.format(Thnom,file_path))
-    	arhhc = ''
     	try:
-    		arhhc = Getlrc(music_id)
+    		GetLrcF(music_id,music_lrc)
     	except:
-    		print ("\n" + '[![Process{} :[{}] Get MP3 LRC Error!'.format(Thnom,file_path))
-    	if 'lrc' in arhhc:
-        	try:
-        		f = open((music_lrc+'.lrc'),'w')
-        		f.write(str(arhhc['lrc']['lyric']))
-        		f.close()
-        	except:
-        		print ('[!][Process:{}][{}]LRC Get Error!'.format(Thnom,file_path))
-    	if 'tlyric' in arhhc:
-    		try:
-    			l = open((music_lrc+'.tlc'),'w')
-    			l.write(str(arhhc['tlyric']['lyric']))
-    			l.close()
-    		except:
-        		print ('[!][Process:{}][{}]tlc Get Error!'.format(Thnom,file_path))
+    		print ('MP3 Lyric Get Error!')
     elif meta_data['format'] == 'flac':
-    	#print (file_name)
     	audio = FLAC(file_name)
     	audio["title"] = meta_data['musicName']
     	audio['album'] = meta_data['album']
@@ -183,39 +203,14 @@ def dump(file_path,Thnom):
     	try:
     		audio.save()
     	except:
-    		print ("\n" + '[![Process{} : [{}]FLAC Tags Save Error!'.format(Thnom,file_path))
-    	try:
-    		#audio.save()
-    		arhhc = Getlrc(music_id)
-    		if 'lrc' in arhhc:
-    			if not 'lyric' in arhhc['lrc']:
-    				print ('[!][Process:{}][{}]No Lyric Flag Found!'.format(Thnom,file_path))
-    				return 4
-    			if len(arhhc['lrc']['lyric']) < 1:
-    				print ('[!][Process:{}][{}]No Lyric Flag Found!'.format(Thnom,file_path))
-    				return 4
-    			try:
-    				open((music_lrc+'.lrc'),'w').write(str(arhhc['lrc']['lyric']))
-    			except:
-    				print ('[!][Process:{}][{}]LRC Get Error!'.format(Thnom,file_path))
-    		if 'tlyric' in arhhc:
-    			if not 'lyric' in arhhc['tlyric']:
-    				print ('[!][Process:{}][{}]No Tlyric Flag Found!'.format(Thnom,file_path))
-    				return 4
-    			if len(arhhc['tlyric']['lyric']) < 1:
-    				print ('[!][Process:{}][{}]No Tlyric Flag Found!'.format(Thnom,file_path))
-    				return 4
-    			else:
-    				try:
-    					open((music_lrc+'.tlc'),'w').write(str(arhhc['tlyric']['lyric']))
-    				except:
-        				print ('[!][Process:{}][{}]tlc Get Error!'.format(Thnom,file_path))
-    	except:
-    		print ('[!][Process:{}][{}]FLAC lyric Get Error!'.format(Thnom,file_path))
     		sfnr='title:'+meta_data['musicName']+'#$#' + 'artist:' + meta_data['artist'][0][0] +'#$#' +'album:'+ meta_data['musicName']+ '#$#albumPic:'+meta_data['albumPic']
     		open((file_name+'.songinfo'),'w').write(sfnr)
     		open(music_lrc+'.jpg','wb').write(image_data)
     		print ('[!][Process:{}][{}]Song Tags Has Been Saved On A SongInfo File!'.format(Thnom,file_path));
+    	try:
+    		GetLrcF(music_id,music_lrc)
+    	except:
+    		print ('[!][Process:{}][{}]FLAC lyric Get Error!'.format(Thnom,file_path))
     else:
     		print ("\n" + '[!][Process:{}]Unknow Type:'.format(Thnom)+meta_data['format'])
 
@@ -237,74 +232,9 @@ def delname():
 			DelFile(r)
 			print ('[' + r + '] Delete !')
 
-def MV(sfrom,sto):
-  if len(sfrom) < 0:
-    return 2
-  if sys.platform.find("win") > -1:
-    return os.system('move "' + sfrom + '" "' + sto + '"')
-  elif sys.platform.find("linux") > -1:
-    return os.system('mv "' + sfrom + '" "' + sto + '"')
-  return 1  
-
-def DelFile(dlname):
-  if len(dlname) < 0:
-    return 2
-  if sys.platform.find("win") > -1:
-    return os.system('del /F /Q "' + dlname + '"')
-  elif sys.platform.find("linux") > -1:
-    return os.system('rm -rf "' + dlname + '"')
-  return 1  
-def turnname():
-	print ('ALL lrc to ylc')
-	for t in glob.glob('*.lrc'):
-		MV(t,t.replace('.lrc','') + '.ylc"')  #os.rename(t,t.replace('.lrc1','') + '.ylc')
-	print ('ALL Tlrc to tlc')
-	for y in glob.glob('*.tlyric'):
-		MV(y,y.replace('.tlyric','') + '.tlc"')  #os.rename(y,y.replace('.tlyric','') + '.tlc')
-		
-		
 def gtm(gyy):
 	return re.findall(r'\[(.*?)\]',gyy)
 	
-def lastss():
-	for y in glob.glob('*.ylc'):
-		MV( y,y.replace('.ylc','.lrc"'))
-	for y in glob.glob('*.tlc'):
-		MV(y,y.replace('.tlc','.lrc"'))
-
-def hebing(songname):
-	ty1 = songname + '.ylc'
-	ty2 = songname + '.tlc'
-	print ('[Lyric: ' + songname + '] ===> [' + songname + '.lrc]')
-	ttty= open(songname + '.lrc','w')
-	tt1 = open(ty1,'r').read()
-	tt2 = open(ty2,'r').read()
-	yn = tt2.split("\n")
-	for yu in tt1.split("\n"):
-		gh = ""
-		for i in yn:
-			try:
-				if (gtm(i) == gtm(yu)) or (str(gtm(i)[0]) + '0' == str(gtm(yu)[0])) or (str(gtm(i)[0]) == str(gtm(yu)[0]) + '0') or (gtm(i)[0] == gtm(yu)[0]):
-					ttty.write(yu +"\n" + i + "\n")
-					#print (yu +"\n" + i)
-				else:
-					#print (gtm(i)[0] + ' <> ' + gtm(yu)[0])
-					continue
-			except:
-				continue
-	ttty.close()
-	try:
-		if os.path.getsize(songname + '.lrc') > (os.path.getsize(songname + '.ylc')/2):
-			DelFile(ty1)
-			DelFile(ty2)
-		else:
-			print ('Error!    ' + ty1)
-			DelFile(songname + '.lrc')
-	except:
-		print ('REMOVE ' + ty1 + ' & ' + ty2 + ' FAILD!')
-
-
-
 if __name__ == '__main__':
 	multiprocessing.freeze_support()
 	print ('*')
@@ -344,8 +274,6 @@ if __name__ == '__main__':
 	print ('[MAIN]eta ' + str(round(ttbig,2)) + ' ' + dw)
 	print ('[MAIN]Open {} Processes To Convent This Files!'.format(AllTheardNumber))
 	print ('[MAIN]Press "Ctrl + c" to stop convent')
-	#print (type(totsong.get()))
-	#print (len(ncmfiles))
 	last = int(len(ncmfiles) % AllTheardNumber)
 	avg = int((len(ncmfiles)-last)/AllTheardNumber)
 	for ppo in range(0,AllTheardNumber):
@@ -376,14 +304,8 @@ if __name__ == '__main__':
 	if os.path.exists('ncm2music_error.txt'):
 		if os.path.getsize('ncm2music_error.txt') < 10:
 			DelFile('ncm2music_error.txt')
+		else:
+			print ('Please see -> ncm2music_error.txt <- Log file!')
 	delname()
-	turnname()
-	#os.system('clear')
-	for i in glob.glob('*.ylc'):
-		hhiu = "./" + i.replace('.ylc','')
-		if os.path.exists(hhiu + '.tlc'):
-			hebing(hhiu)
-	delname()
-	lastss()
 	print ("[MAIN]ALL Jobs Done!")
 

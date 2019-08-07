@@ -78,7 +78,10 @@ def download(IGET):
 			open('err.log').write('ERROR_IN_GET_ALL_lyric_tlyric:'+music_name+"\n")
 			continue
 		if 'tlyric' in arhhc:
-			tolrc = TwoToOne(str(arhhc['lrc']['lyric']),str(arhhc['tlyric']['lyric']))
+			if 'lyric' in arhhc['tlyric']:
+				tolrc = TwoToOne(str(arhhc['lrc']['lyric']),str(arhhc['tlyric']['lyric']))
+			else:
+				tolrc = str(arhhc['lrc']['lyric'])
 		else:
 			tolrc = str(arhhc['lrc']['lyric'])
 		try:
