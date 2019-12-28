@@ -3,7 +3,7 @@ import sys
 from bs4 import BeautifulSoup
 import time,os,re,json,requests
 def Getlrc(neteaseID):
-	lrc_url = 'http://music.163.com/api/song/lyric?' + 'id=' + str(neteaseID) + '&lv=1&kv=1&tv=-1'
+	lrc_url = 'http://music.163.com/api/song/lyric?os=pc&' + 'id=' + str(neteaseID) + '&lv=1&kv=1&tv=-1'
 	lyric = requests.get(lrc_url)
 	json_obj = lyric.text
 	j = json.loads(json_obj)

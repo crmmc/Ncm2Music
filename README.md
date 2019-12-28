@@ -57,21 +57,6 @@ https://www.bilibili.com/video/av59847987/
     <dd>第8次更新---删除了项目里没用的文件，所有脚本更新迁移至Python3</dd>
   <dt><kbd>2019.8.7</kbd></dt>
     <dd>第9次更新---增加了SongFilesLRC_Get.py,优化了一些脚本里的操作。</dd>
+  <dt><kbd>2019.12.28</kbd></dt>
+    <dd>第10次更新---修复了不能获取歌词的bug,修复了歌曲图片格式判断的bug</dd>
 </dl>
-
-
-<h2>例图</h2>
-<p>使用Python3运行Ncm2Music</p>
-<img src="html/s3.jpg" width=300 height=420></img>
-<p>转换输出后得到的文件</p>
-<img src="html/s4.jpg"width=300 height=150></img>
-<p>输出的原版歌词LRC文件</p>
-<img src="html/s5.jpg"width=300 height=80></img>
-<p>输出的翻译歌词Tlyric文件</p>
-<img src="html/s6.jpg"width=300 height=80></img>
-<p>合并原版歌词和翻译歌词</p>
-<img src="html/s7.png" width=330 height=100></img>
-<p>默认情况下(默认4个进程运算)运行Ncm2Music图片</p>
-<img src="html/s2.jpg" width=330 height=150></img>
-<p>多进程转换，速度大幅度提高！</p>
-<img src="html/s8.png" width=330 height=450></img>

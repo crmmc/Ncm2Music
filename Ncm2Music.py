@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 #coding=utf-8
-
 # Modifier: CRMMC-CreamTes-KGDSave SoftWare Studio 2018-2020'
 # Thanks for nondanee
 #need a tools use order: pip install pycryptodome mutagen requests urllib3
@@ -28,11 +27,9 @@ from mutagen.flac import Picture
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import COMM,APIC,ID3
 
-
 def sOUT(text):
 	sys.stdout.write(text)
 	sys.stdout.flush()
-
 
 def EOut(text):
 	try:
@@ -60,8 +57,9 @@ def TwoToOne(l1,l2):
 
 def GetLrcF(id,sname):
 	try:
-		lrc_url = 'http://music.163.com/api/song/lyric?' + 'id=' + str(id) + '&lv=1&kv=1&tv=-1'
-		lyric = requests.get(lrc_url)
+		lrc_url = 'http://music.163.com/api/song/lyric?os=pc&id=' + str(id) + '&lv=-1&kv=-1&tv=-1'
+		#lrc_url = 'http://music.163.com/api/song/lyric?' + 'id=' + str(id) + '&lv=1&kv=1&tv=-1'
+		lyric = requests.get(lrc_url,headers={'User-Agent':'Dalvik/2.1.0 (Linux; U; Android 10; Redmi K20 Pro MIUI/V11.0.4.0.QFKCNXM)','Host':'music.163.com'})
 		json_obj = lyric.text
 		arhhc = json.loads(json_obj)
 	except:
@@ -82,12 +80,12 @@ def GetLrcF(id,sname):
 		tolrc = str(arhhc['lrc']['lyric'])
 	try:
 		open(sname + '.lrc' ,'w').write(tolrc)
-		print ('Get [' + sname + '] Successful!')
+		print ('[Lyric] Get [' + sname + '] Successful!')
 	except:
 		EOut('ERROR_IN_WRITE_ALL_lyric_tlyric:'+music_name+"\n")
 			
 def CFG(a):
-	return a.replace('：','').replace('[','').replace(']','').replace('。','').replace('？','').replace('，','').replace('“','').replace('”','').replace('"','').replace("'",'').replace(':','_').replace('/','')
+	return a.replace('：','').replace('[','').replace(']','').replace('。','').replace('？','').replace('，','').replace('“','').replace('”','').replace('"','').replace("'",'').replace(':','_').replace('/','').replace('?','')
 
 def dump(file_path,Thnom):
     core_key = binascii.a2b_hex("687A4852416D736F356B496E62617857")
@@ -181,7 +179,8 @@ def dump(file_path,Thnom):
     	hh = ID3(file_name)
     	hh.update_to_v23()
     	hh.save()
-    	hh['APIC:'] = (APIC(mime='image/jpg',  data=image_data))
+    	hh['APIC:'] = (APIC(data=image_data))
+    	#hh['APIC:'] = (APIC(mime='image/jpg',  data=image_data))
     	try:
     		hh.save()
     	except:
@@ -200,7 +199,7 @@ def dump(file_path,Thnom):
     	app = Picture()
     	app.data = image_data
     	app.type = mutagen.id3.PictureType.COVER_FRONT 
-    	app.mime = u"image/jpeg"
+    	#app.mime = u"image/jpeg"
     	audio.add_picture(app)
     	try:
     		audio.save()
@@ -266,17 +265,6 @@ if __name__ == '__main__':
 	t=[0,]*AllTheardNumber
 	print ('[MAIN]Running in a '+ sys.platform + ' system')
 	print ('[MAIN]There are ' + str(len(ncmfiles)) + ' Files ')
-	ttbig = 0
-	for tii in ncmfiles:
-		ttbig = ttbig + os.path.getsize(tii)/1024/1024.0*1.5
-	dw = 's'
-	if ttbig > 60:
-		ttbig = ttbig / 60.0
-		dw = 'min'
-		if ttbig > 60:
-			ttbig = ttbig / 60.0
-			dw = 'h'
-	print ('[MAIN]eta ' + str(round(ttbig,2)) + ' ' + dw)
 	print ('[MAIN]Open {} Processes To Convent This Files!'.format(AllTheardNumber))
 	print ('[MAIN]Press "Ctrl + c" to stop convent')
 	last = int(len(ncmfiles) % AllTheardNumber)
@@ -299,7 +287,7 @@ if __name__ == '__main__':
 			ncmlist = []
 	nnu = 0
 	time.sleep(AllTheardNumber + 2)
-	print ('[Main] Waiting until All Process Done!')
+	print ('[Main] Waiting until All Process Finish!')
 	try:
 		for k in t:
 			k.join()
@@ -312,5 +300,5 @@ if __name__ == '__main__':
 		else:
 			print ('Please see -> ncm2music_error.txt <- Log file!')
 	delname()
-	print ("[MAIN]ALL Jobs Done!")
+	print ("[MAIN]ALL Jobs Finish!")
 
