@@ -2,7 +2,7 @@
 #coding=utf-8
 # Modifier: CRMMC-CreamTes-KGDSave SoftWare Studio 2018-2020'
 # Thanks for nondanee
-#need a tools use order: pip install pycryptodome mutagen requests urllib3
+#need a tools use order: pip install pycryptodome mutagen requests urllib3 pillow
 #to install it!
 #it can be used on Windows,Linux,Mac on Python3
 import binascii
@@ -26,7 +26,7 @@ from mutagen.flac import FLAC
 from mutagen.flac import Picture
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import COMM,APIC,ID3
-
+from PIL import Image
 def sOUT(text):
 	sys.stdout.write(text)
 	sys.stdout.flush()
@@ -165,6 +165,10 @@ def dump(file_path,Thnom):
     	try:
     		picurl = meta_data['albumPic']
     		image_data = requests.get(picurl).content
+    		print ('Album Picture Getted! Convent to type jpeg')
+    		f = BytesIO()
+    		image_data = Image.open(io.BytesIO(image_data)).save(f,'jpeg')
+    		image_data = f.getvalue()
     	except:
     		print ("\n" + '[!][Process:{}][{}]Get Picture From Internet Error!'.format(Thnom,file_path))
     if meta_data['format'] == 'mp3':
@@ -180,7 +184,7 @@ def dump(file_path,Thnom):
     	hh.update_to_v23()
     	hh.save()
     	hh['APIC:'] = (APIC(data=image_data))
-    	#hh['APIC:'] = (APIC(mime='image/jpg',  data=image_data))
+    	hh['APIC:'] = (APIC(mime='image/jpeg',  data=image_data))
     	try:
     		hh.save()
     	except:
@@ -199,7 +203,7 @@ def dump(file_path,Thnom):
     	app = Picture()
     	app.data = image_data
     	app.type = mutagen.id3.PictureType.COVER_FRONT 
-    	#app.mime = u"image/jpeg"
+    	app.mime = "image/jpeg"
     	audio.add_picture(app)
     	try:
     		audio.save()
