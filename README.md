@@ -15,15 +15,14 @@ https://www.bilibili.com/video/av59847987/
 <p style="background-color:yellow">推荐使用下面的库！不安装上面的库</p>
 <code>pip3 install -i https://pypi.douban.com/simple pycryptodome</code>
 ，嫌弃官方源太慢可以自行百度国内pypi源然后更换
-使用<code>pip install pycryptodome mutagen requests urllib3</code>来安装依赖库
+使用<code>pip install pycryptodome mutagen pillow requests urllib3</code>来安装依赖库
 
 <h3>使用方法：</h3>
 <p style="background-color:red">直接将Ncm2Music.py复制到有.ncm文件的文件夹里运行即可。</p>
 您可以将NCM文件任意更名，就算更名也能输出正常的音乐文件歌手和歌曲名，因为这些数据被保存在ncm文件内了
 <p style="background-color:red"><u>推荐在转换前将ncm文件全部更名为1.ncm,2.ncm,3.ncm.....这样可以防止因文件名内含有特殊字符导致的转换出错!这样改名并没有害处!</u></p>
 <h5>高端操作</h5>
-<p>开一个Ncm2Muaic线程只能占用1个CPU核心的50%，将主程序(Ncm2Music.py)的第246行的变量AllTheardNumber的值更改为(CPU核心数 - 1)*2，速度最快!!!</p>
-<img src="html/ss1.png" width=330 height=200>
+<p>开一个Ncm2Muaic线程只能占用1个CPU核心的50%，将主程序(Ncm2Music.py)的第262行的变量AllTheardNumber的值更改为(CPU核心数 - 1)*2，速度最快!!!</p>
 <h3>文件列表:</h3>
 <p>-----Ncm2Music.py 程序主体，使用pyinstaller编译出来使用更方便，必须使用版本大于3.3的pyinstaller编译，否则多进程模块会出问题。主程序仅运行于python3中</p>
 <p>-----SongList_LRC_Getter.py 获取一个歌单里所有歌曲的歌词，可以单独使用来获取歌词，普通歌词保存为lrc翻译歌词保存为tlc</p>
