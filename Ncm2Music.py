@@ -5,6 +5,13 @@
 #need a tools use order: pip install pycryptodome mutagen requests urllib3 pillow
 #to install it!
 #it can be used on Windows,Linux,Mac on Python3
+#////////////////////////////////;
+#This variable defines the number of threads
+#Its value is four by default.
+#It is recommended to change the value to (CPU cores-1) * 2
+AllTheardNumber = 4
+#Please be careful to change the following, it may prevent the program from running again
+#///////////////////////////////;
 import binascii
 import struct
 import base64
@@ -221,8 +228,8 @@ def dump(file_path,Thnom):
 
 def MultiThreadChild(list,Number):
 	print ("\n" + '[+][Process:{}] Process Ready! Get Task: {}'.format(Number,len(list)))
+	time.sleep(Number)
 	for ncm1f in list:
-		time.sleep(Number)
 		try:
 			dump(ncm1f,Number)
 		except:
@@ -259,7 +266,6 @@ if __name__ == '__main__':
 	print ('===============================')
 	print ('Time: ' + time.asctime())
 	time.sleep(2)
-	AllTheardNumber = 4
 	ncmfiles = glob.glob("*.ncm")
 	if len(ncmfiles) < 1:
 		print ('[MAIN]NCM Files No Found!')
