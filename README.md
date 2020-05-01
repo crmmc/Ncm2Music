@@ -3,7 +3,7 @@
 <h2>简介</h2>
 
 
-<p>Python版本解密网易云音乐加密音乐文件和QQ音乐加密音乐文件，根据Github大神们的源码再开发而来，加了很多使用功能，比如嵌入歌曲tags和封面图片，下载歌词啥的。</p>
+<p>Python版本解密网易云音乐加密音乐文件和QQ音乐加密音乐文件，根据Github大神们分析的解密原理再开发而来，加了很多实用功能，比如给网易云的音乐文件嵌入歌曲tags和封面图片，下载歌词啥的。</p>
 <p5>投稿了使用教程在B站上的: <p5>
 https://www.bilibili.com/video/av59847987/
 <p6>仅网易云的音乐文件正常内嵌图片和写入歌曲信息，这是因为QQ音乐的文件里不包含歌曲封面信息</p6>
@@ -25,7 +25,6 @@ https://www.bilibili.com/video/av59847987/
 <h5>高端操作</h5>
 <<<<<<< HEAD
 <p>开一个Ncm2Muaic线程只能占用1个CPU核心的50%，将主程序(Ncm2Music.py)的第12行的变量AllTheardNumber的值更改为(CPU核心数 - 1)*2，速度最快!!!</p>
-<img src="html/ss1.png" width=330 height=200>
 =======
 
 
