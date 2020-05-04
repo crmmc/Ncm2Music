@@ -28,11 +28,11 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 import mutagen.id3
 from Crypto.Cipher import AES
-from mutagen.mp3 import MP3, EasyMP3 
+from mutagen.mp3 import MP3#, EasyMP3 
 from mutagen.flac import FLAC
 from mutagen.flac import Picture
 from mutagen.easyid3 import EasyID3
-from mutagen.id3 import COMM,APIC,ID3
+from mutagen.id3 import APIC,ID3#,COMM
 from PIL import Image
 
 def sOUT(text):
@@ -47,12 +47,17 @@ def EOut(text):
     except:
         print ('[!]Open log file error!')
     return 0
-    
+
+def DelFile(filename):
+    if sys.platform.find('win') < 0:
+        os.system("rm -rf '{}'".format(filename))
+    else:
+        os.system('del /f /q "{}"'.format(filename))
+
 def TwoToOne(l1,l2):
     yn = l2.split("\n")
     ttty = ''
     for yu in l1.split("\n"):
-        gh = ""
         for i in yn:
             try:
                 if (gtm(i) == gtm(yu)) or (str(gtm(i)[0]) + '0' == str(gtm(yu)[0])) or (str(gtm(i)[0]) == str(gtm(yu)[0]) + '0') or (gtm(i)[0] == gtm(yu)[0]):
@@ -72,13 +77,13 @@ def GetLrcF(id,sname):
         arhhc = json.loads(json_obj)
     except:
         print ('Get lrc error!')
-        EOut('ERROR_IN_GET_HTML_lyric_tlyric:'+music_name+"\n")
+        EOut('ERROR_IN_GET_HTML_lyric_tlyric:'+sname+"\n")
         return ''
     try:
         if len(arhhc['lrc']['lyric']) < 10:
             return -1
     except:
-        EOut('ERROR_IN_GET_ALL_lyric_tlyric:'+music_name+"\n")
+        EOut('ERROR_IN_GET_ALL_lyric_tlyric:'+sname+"\n")
     if 'tlyric' in arhhc:
         if 'lyric' in arhhc['tlyric']:
             tolrc = TwoToOne(str(arhhc['lrc']['lyric']),str(arhhc['tlyric']['lyric']))
@@ -90,7 +95,7 @@ def GetLrcF(id,sname):
         open(sname + '.lrc' ,'w').write(tolrc)
         print ('[Lyric] Get [' + sname + '] Successful!')
     except:
-        EOut('ERROR_IN_WRITE_ALL_lyric_tlyric:'+music_name+"\n")
+        EOut('ERROR_IN_WRITE_ALL_lyric_tlyric:'+sname+"\n")
             
 def CFG(a):
     return a.replace('：','').replace('[','').replace(']','').replace('。','').replace('？','').replace('，','').replace('“','').replace('”','').replace('"','').replace("'",'').replace(':','_').replace('/','').replace('?','')
@@ -168,7 +173,6 @@ def dump(file_path,Thnom):
         m.close()
         f.close()
     music_id = meta_data['musicId']
-    music_name = file_name.split(' - ')[0]
     music_lrc = file_name.replace('.' + str(meta_data['format']),'')
     if len(image_data) < 1000:
         try:
