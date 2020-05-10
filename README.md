@@ -7,7 +7,7 @@
 <p5>投稿了使用教程在B站上的: <p5>
 https://www.bilibili.com/video/av59847987/
 <p6>仅网易云的音乐文件正常内嵌图片和写入歌曲信息，这是因为QQ音乐的文件里不包含歌曲封面信息</p6>
-一个在Win10上编译好的版本(使用源码和编译时间: 2019.7.19--16:30) : https://www.lanzous.com/i528che
+一个在Win10上编译好的版本(使用源码和编译时间: 2020.05.10) : https://lanzous.com/ich1mli
 <h2>安装</h2>
 <h3 style="background-color:green">依赖 pycrypto库</h3>
 
