@@ -1,10 +1,10 @@
 <h1>Netease Cloud Music And QQMusic Copyright Protection File Dump (Python version)</h1>
 <h1>注意： 建议使用新的经过重构的Go语言版本，功能支持解密ncm与QQ音乐部分文件，优化了数倍的速度，增加了多线程运行的功能，使用体验远超此项目。同时此项目永久停更</h1>
+<a href=https://github.com/crmmc/nqdumpgo><h2>点击前往新替代项目NqdumpGO</p></a>
 <h2>简介</h2>
 
 
 <p>Python版本解密网易云音乐加密音乐文件和QQ音乐加密音乐文件，根据Github大神们分析的解密原理再开发而来，加了很多实用功能，比如给网易云的音乐文件嵌入歌曲tags和封面图片，下载歌词啥的。</p>
-<a href=https://github.com/crmmc/nqdumpgo><h2>点击前往新替代项目NqdumpGO</p></a>
 <p5>投稿了使用教程在B站上的: <p5>
 https://www.bilibili.com/video/av59847987/
 <p6>仅网易云的音乐文件正常内嵌图片和写入歌曲信息，这是因为QQ音乐的文件里不包含歌曲封面信息</p6>
