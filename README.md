@@ -11,11 +11,7 @@ https://www.bilibili.com/video/av59847987/
 <h2>安装</h2>
 <h3 style="background-color:green">依赖 pycrypto库</h3>
 
-<code>pip(3) install pycrypto</code>
-<p style="background-color:yellow">推荐使用下面的库！不安装上面的库</p>
-<code>pip3 install -i https://pypi.douban.com/simple pycryptodome</code>
-，嫌弃官方源太慢可以自行百度国内pypi源然后更换
-使用<code>pip install pycryptodome mutagen pillow requests urllib3</code>来安装依赖库
+使用<code>pip install -i https://pypi.douban.com/simple pycryptodome mutagen pillow requests urllib3</code>来安装依赖库
 
 <h3>使用方法：</h3>
 <p style="background-color:red">直接将Ncm2Music.py复制到有对应被加密的音乐文件的文件夹里运行即可。</p>
