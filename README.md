@@ -1,5 +1,5 @@
 <h1>Netease Cloud Music And QQMusic Copyright Protection File Dump (Python version)</h1>
-
+<h1>注意： 建议使用新的经过重构的Go语言版本，功能支持解密ncm与QQ音乐部分文件，优化了数倍的速度，增加了多线程运行的功能，使用体验远超此项目。同时此项目永久停更</h1>
 <h2>简介</h2>
 
 
